@@ -1,0 +1,1825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Explorer Kids — Fun Science Learning!</title>
+<meta name="theme-color" content="#4ade80">
+<meta name="description" content="Explore your brain, neurons, and thinking superpowers through fun interactive games!">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f0fdf4; --bg-card: #ffffff; --border: #bbf7d0;
+    --fg: #14532d; --fg-muted: #4ade80; --accent: #22c55e;
+    --accent-glow: rgba(34,197,94,0.3); --fun1: #f97316; --fun2: #eab308;
+    --fun3: #3b82f6; --fun4: #a855f7; --fun5: #ec4899;
+    --shadow: 0 4px 20px rgba(34,197,94,0.15);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #052e16; --bg-card: #0a3d1f; --border: #166534; --fg: #dcfce7; --fg-muted: #4ade80; }
+  }
+  html { font-size: 18px; } /* Larger base for kids */
+  body { font-family: 'Nunito', 'Comic Sans MS', cursive, sans-serif; background: var(--bg); color: var(--fg); min-height: 100vh; line-height: 1.7; }
+  .app { display: flex; flex-direction: column; min-height: 100vh; }
+  
+  /* Header - Fun and colorful */
+  header { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-bottom: 4px solid var(--accent); padding: 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+  .header-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+  .logo { display: flex; align-items: center; gap: 1rem; cursor: pointer; transition: transform 0.2s; }
+  .logo:hover { transform: scale(1.05) rotate(-2deg); }
+  .logo-icon { font-size: 3rem; animation: bounce 2s infinite; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+  .logo-text h1 { font-size: 2rem; font-weight: 900; background: linear-gradient(135deg, #166534, #16a34a, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+  .logo-text p { font-size: 1rem; color: #15803d; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .nav { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .nav-btn { padding: 0.75rem 1.5rem; background: #fff; border: 3px solid var(--accent); border-radius: 50px; color: #166534; font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 0 #15803d; }
+  .nav-btn:hover, .nav-btn.active { background: var(--accent); color: #fff; border-color: #15803d; transform: translateY(-2px); box-shadow: 0 6px 0 #15803d; }
+  .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #15803d; }
+  .user-bar { display: flex; align-items: center; gap: 1rem; }
+  .avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--fun1), var(--fun3)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: #fff; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.2s; }
+  .avatar:hover { transform: scale(1.1) rotate(5deg); }
+  .xp-bar { flex: 1; max-width: 200px; height: 16px; background: #dcfce7; border-radius: 8px; overflow: hidden; border: 2px solid var(--accent); }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--fun1), var(--fun2), var(--fun3)); border-radius: 6px; transition: width 0.5s ease; }
+  .level-badge { background: linear-gradient(135deg, var(--fun2), var(--fun1)); color: #fff; padding: 0.25rem 1rem; border-radius: 20px; font-weight: 900; font-size: 0.9rem; box-shadow: 0 2px 8px rgba(234,179,8,0.4); }
+
+  /* Main */
+  main { flex: 1; max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem; width: 100%; display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  
+  /* Hero Section */
+  .hero { text-align: center; padding: 2rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fef3c7 100%); border-radius: 24px; border: 4px solid var(--fun2); box-shadow: var(--shadow); margin-bottom: 1rem; animation: slideUp 0.6s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .hero h2 { font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #92400e, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
+  .hero p { font-size: 1.25rem; color: #78350f; font-weight: 600; max-width: 60ch; margin: 0 auto 1.5rem; }
+  .hero-stats { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+  .stat { background: #fff; padding: 1rem 2rem; border-radius: 16px; border: 3px solid var(--fun2); box-shadow: 0 4px 0 #f59e0b; min-width: 120px; }
+  .stat-value { font-size: 2rem; font-weight: 900; color: #92400e; }
+  .stat-label { font-size: 0.85rem; color: #78350f; font-weight: 700; text-transform: uppercase; }
+  
+  /* Module Cards - Big, colorful, tactile */
+  .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .module-card { background: #fff; border: 4px solid var(--border); border-radius: 24px; padding: 2rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); position: relative; overflow: hidden; box-shadow: 0 8px 0 rgba(34,197,94,0.1); }
+  .module-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--card-color); }
+  .module-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 0 rgba(34,197,94,0.2); border-color: var(--card-color); }
+  .module-card:active { transform: translateY(-2px) scale(0.98); box-shadow: 0 4px 0 rgba(34,197,94,0.2); }
+  .module-icon { font-size: 4rem; margin-bottom: 1rem; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .module-card:nth-child(1) { --card-color: var(--fun1); }
+  .module-card:nth-child(2) { --card-color: var(--fun3); }
+  .module-card:nth-child(3) { --card-color: var(--fun4); }
+  .module-card:nth-child(4) { --card-color: var(--fun5); }
+  .module-title { font-size: 1.5rem; font-weight: 900; color: var(--card-color); margin-bottom: 0.5rem; }
+  .module-subtitle { color: #166534; font-weight: 600; margin-bottom: 1rem; font-size: 1rem; }
+  .module-desc { color: #374151; line-height: 1.6; margin-bottom: 1.5rem; }
+  .module-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+  .tag { background: var(--card-color); color: #fff; padding: 0.4rem 1rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; }
+  .play-btn { width: 100%; padding: 1rem; background: var(--card-color); color: #fff; border: none; border-radius: 50px; font-family: inherit; font-size: 1.1rem; font-weight: 900; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 0 rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+  .play-btn:hover { transform: scale(1.02); box-shadow: 0 6px 0 rgba(0,0,0,0.15); }
+  .play-btn:active { transform: scale(0.98); }
+  
+  /* Gamification Sidebar - Floating */
+  .gamification-bar { position: fixed; right: 1rem; top: 50%; transform: translateY(-50%); z-index: 200; display: flex; flex-direction: column; gap: 0.75rem; }
+  .gamification-btn { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--accent); background: #fff; font-size: 1.5rem; cursor: pointer; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; }
+  .gamification-btn:hover { transform: scale(1.15) rotate(5deg); }
+  .gamification-btn .badge-count { position: absolute; top: -8px; right: -8px; background: var(--fun1); color: #fff; font-size: 0.7rem; font-weight: 900; padding: 0.2rem 0.5rem; border-radius: 10px; min-width: 20px; text-align: center; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+  
+  /* Modal Overlay */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1rem; animation: fadeIn 0.3s ease; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: #fff; border-radius: 24px; padding: 2rem; max-width: 90vw; max-height: 90vh; overflow-y: auto; width: 100%; max-width: 700px; box-shadow: 0 24px 48px rgba(0,0,0,0.3); animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 3px solid var(--border); }
+  .modal-title { font-size: 1.75rem; font-weight: 900; color: var(--fg); }
+  .close-btn { width: 44px; height: 44px; border-radius: 50%; border: 3px solid var(--border); background: #fff; font-size: 1.5rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .close-btn:hover { background: #fef2f2; border-color: #ef4444; color: #ef4444; transform: rotate(90deg); }
+  
+  /* Kids Module Views */
+  .kids-view { display: none; }
+  .kids-view.active { display: block; animation: slideUp 0.4s ease; }
+  .view-header { text-align: center; margin-bottom: 2rem; }
+  .view-title { font-size: 2rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem; }
+  .view-desc { color: #374151; font-size: 1.1rem; }
+  
+  /* Canvas Area - Big and friendly */
+  .canvas-zone { background: #f8fafc; border: 4px dashed var(--border); border-radius: 20px; min-height: 400px; position: relative; overflow: hidden; margin-bottom: 1.5rem; }
+  .canvas-zone canvas { display: block; width: 100%; height: 400px; border-radius: 16px; }
+  .canvas-toolbar { position: absolute; top: 1rem; right: 1rem; z-index: 10; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .toolbar-btn { padding: 0.75rem 1.25rem; background: #fff; border: 3px solid var(--accent); border-radius: 50px; color: #166534; font-family: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 #15803d; transition: all 0.2s; }
+  .toolbar-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #15803d; }
+  .toolbar-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #15803d; }
+  .toolbar-btn.fun { background: var(--fun1); border-color: #ea580c; color: #fff; box-shadow: 0 4px 0 #ea580c; }
+  .toolbar-btn.fun:hover { box-shadow: 0 6px 0 #ea580c; }
+  
+  /* Control Sliders - Big and touch-friendly */
+  .controls-area { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+  .control-card { background: #fff; border: 3px solid var(--border); border-radius: 20px; padding: 1.5rem; box-shadow: 0 4px 0 rgba(34,197,94,0.1); }
+  .control-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .control-label-text { font-weight: 800; color: #166534; font-size: 1.1rem; }
+  .control-value { background: var(--accent); color: #fff; padding: 0.25rem 1rem; border-radius: 50px; font-weight: 900; font-size: 1.1rem; }
+  .big-slider { width: 100%; height: 12px; -webkit-appearance: none; appearance: none; background: #dcfce7; border-radius: 6px; outline: none; border: 3px solid var(--border); cursor: pointer; }
+  .big-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 4px 8px rgba(34,197,94,0.4); transition: transform 0.2s; }
+  .big-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .big-slider::-moz-range-thumb { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; }
+  
+  /* Results Display - Visual and fun */
+  .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .result-card { background: #fff; border: 4px solid var(--border); border-radius: 20px; padding: 1.5rem; text-align: center; transition: all 0.2s; }
+  .result-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .result-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .result-value { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+  .result-label { color: #374151; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
+  .result-card.warning .result-value { color: #ef4444; }
+  .result-card.warning { border-color: #fecaca; background: #fef2f2; }
+  .result-card.success { border-color: #86efac; background: #f0fdf4; }
+  
+  /* Recommendations - Friendly tips */
+  .tips-area { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 3px solid var(--fun2); border-radius: 20px; padding: 1.5rem; margin-top: 1.5rem; }
+  .tips-title { font-size: 1.25rem; font-weight: 900; color: #92400e; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+  .tip { padding: 0.75rem 1rem; background: #fff; border-radius: 12px; margin-bottom: 0.75rem; border-left: 4px solid var(--fun2); box-shadow: 0 2px 8px rgba(0,0,0,0.05); color: #78350f; font-weight: 600; }
+  .tip.warning { border-left-color: #ef4444; background: #fef2f2; color: #991b1b; }
+  .tip.success { border-left-color: var(--accent); background: #f0fdf4; color: #14532d; }
+  
+  /* Progress & Badges */
+  .progress-section { background: linear-gradient(135deg, #dcfce7, #bbf7d0); border: 3px solid var(--accent); border-radius: 20px; padding: 1.5rem; margin-top: 1.5rem; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .progress-title { font-size: 1.25rem; font-weight: 900; color: #166534; }
+  .badges-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .badge { background: #fff; border: 3px solid var(--border); border-radius: 50px; padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; cursor: pointer; }
+  .badge:hover { transform: scale(1.05); border-color: var(--accent); box-shadow: 0 4px 12px rgba(34,197,94,0.2); }
+  .badge.earned { border-color: var(--fun2); background: #fef3c7; }
+  .badge-icon { font-size: 1.5rem; }
+  .badge-name { font-weight: 800; color: #166534; }
+  .badge-locked { opacity: 0.4; filter: grayscale(1); cursor: not-allowed; }
+  
+  /* Accessibility Toolbar */
+  .a11y-toolbar { position: fixed; left: 1rem; bottom: 1rem; z-index: 300; background: #fff; border: 3px solid var(--accent); border-radius: 50px; padding: 0.5rem; box-shadow: var(--shadow); display: flex; gap: 0.5rem; }
+  .a11y-btn { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--border); background: #fff; font-size: 1.25rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+  .a11y-btn:hover { border-color: var(--accent); background: #f0fdf4; transform: scale(1.1); }
+  .a11y-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  
+  /* Footer */
+  footer { background: #14532d; color: #dcfce7; padding: 2rem; text-align: center; margin-top: 3rem; }
+  .footer-content { max-width: 1000px; margin: 0 auto; }
+  .footer-links { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 1rem 0; }
+  .footer-link { color: #86efac; font-weight: 700; text-decoration: none; transition: color 0.2s; }
+  .footer-link:hover { color: var(--fun2); }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    html { font-size: 16px; }
+    .hero h2 { font-size: 1.75rem; }
+    .nav-btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+    .gamification-bar { right: 0.5rem; }
+    .gamification-btn { width: 50px; height: 50px; font-size: 1.25rem; }
+    .a11y-toolbar { left: 0.5rem; bottom: 0.5rem; padding: 0.25rem; }
+    .a11y-btn { width: 40px; height: 40px; font-size: 1.1rem; }
+    .modal { margin: 1rem; max-height: calc(100vh - 2rem); }
+  }
+  
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+  
+  /* High Contrast */
+  @media (prefers-contrast: high) {
+    :root { --border: #000; --bg: #fff; --fg: #000; --bg-card: #fff; }
+    .module-card { border-width: 4px; }
+    .big-slider { border-width: 3px; }
+  }
+  
+  /* Large Text */
+  .large-text html { font-size: 22px; }
+  .large-text .hero h2 { font-size: 3rem; }
+  .large-text .module-title { font-size: 1.75rem; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Accessibility Toolbar -->
+  <div class="a11y-toolbar" role="toolbar" aria-label="Accessibility options">
+    <button class="a11y-btn" id="btnLargeText" aria-label="Large text" aria-pressed="false" title="Large Text">A+</button>
+    <button class="a11y-btn" id="btnHighContrast" aria-label="High contrast" aria-pressed="false" title="High Contrast">⬜</button>
+    <button class="a11y-btn" id="btnReduceMotion" aria-label="Reduce motion" aria-pressed="false" title="Reduce Motion">⏸</button>
+    <button class="a11y-btn" id="btnReadAloud" aria-label="Read aloud" aria-pressed="false" title="Read Aloud">🔊</button>
+  </div>
+
+  <!-- Gamification Floating Bar -->
+  <div class="gamification-bar" aria-label="Achievements">
+    <button class="gamification-btn" id="btnBadges" aria-label="Your badges" title="Badges & Achievements">🏆<span class="badge-count" id="badgeCount">3</span></button>
+    <button class="gamification-btn" id="btnProgress" aria-label="Your progress" title="Learning Progress">📈</button>
+    <button class="gamification-btn" id="btnStreak" aria-label="Daily streak" title="Daily Streak">🔥<span class="badge-count">7</span></button>
+    <button class="gamification-btn" id="btnFriends" aria-label="Friends" title="Study Buddies">👯<span class="badge-count">2</span></button>
+  </div>
+
+  <header>
+    <div class="header-content">
+      <div class="logo" onclick="showView('home')">
+        <span class="logo-icon">🧠</span>
+        <div class="logo-text">
+          <h1>Brain Explorer Kids</h1>
+          <p>Discover Your Thinking Superpowers!</p>
+        </div>
+      </div>
+      <nav class="nav" role="navigation" aria-label="Main navigation">
+        <button class="nav-btn active" data-view="home" aria-pressed="true">🏠 Home</button>
+        <button class="nav-btn" data-view="modules" aria-pressed="false">🎮 Play</button>
+        <button class="nav-btn" data-view="progress" aria-pressed="false">📊 Progress</button>
+        <button class="nav-btn" data-view="parents" aria-pressed="false">👨‍👩‍👧 Parents</button>
+      </nav>
+      <div class="user-bar">
+        <div class="xp-bar" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" aria-label="Experience points">
+          <div class="xp-fill" id="xpFill" style="width: 65%"></div>
+        </div>
+        <span class="level-badge">Level 5</span>
+        <div class="avatar" id="userAvatar" tabindex="0" aria-label="Your profile">🧒</div>
+      </div>
+    </div>
+  </header>
+
+  <main role="main">
+    <!-- Home View -->
+    <section id="view-home" class="kids-view active" aria-labelledby="homeTitle">
+      <div class="hero">
+        <h2 id="homeTitle">Welcome, Young Scientist! 👋</h2>
+        <p>Your brain is the most amazing computer in the universe. Let's explore its secret powers together!</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-value" id="totalXP">1,250</div>
+            <div class="stat-label">XP Earned</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="modulesDone">3</div>
+            <div class="stat-label">Adventures</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="streakDays">7</div>
+            <div class="stat-label">Day Streak 🔥</div>
+          </div>
+        </div>
+      </div>
+
+      <h2 style="font-size: 1.75rem; font-weight: 900; color: #166534; margin: 1.5rem 0 1rem; text-align: center;">Choose Your Adventure</h2>
+      <div class="modules-grid" role="list" aria-label="Learning modules">
+        <article class="module-card" role="listitem" onclick="openModule('semantic')" tabindex="0" aria-label="Word Web Adventure - Explore how your brain connects ideas">
+          <span class="module-icon">🕸️</span>
+          <h3 class="module-title">Word Web</h3>
+          <p class="module-subtitle">Semantic Memory Explorer</p>
+          <p class="module-desc">Discover how your brain links words like a giant spider web! Activate concepts and watch them light up.</p>
+          <div class="module-tags">
+            <span class="tag">Ages 8+</span>
+            <span class="tag">15 min</span>
+            <span class="tag">🧩 Puzzle</span>
+          </div>
+          <button class="play-btn">▶ Start Adventure</button>
+        </article>
+        
+        <article class="module-card" role="listitem" onclick="openModule('neural')" tabindex="0" aria-label="Neuron Lab - Build and watch brain cells fire">
+          <span class="module-icon">⚡</span>
+          <h3 class="module-title">Neuron Lab</h3>
+          <p class="module-subtitle">Build Living Brain Cells</p>
+          <p class="module-desc">Create 6 types of neurons! Watch them spike, connect, and dance. Learn how electricity powers your thoughts.</p>
+          <div class="module-tags">
+            <span class="tag">Ages 10+</span>
+            <span class="tag">20 min</span>
+            <span class="tag">🔬 Science</span>
+          </div>
+          <button class="play-btn" style="background: var(--fun3);">▶ Enter Lab</button>
+        </article>
+        
+        <article class="module-card" role="listitem" onclick="openModule('graph')" tabindex="0" aria-label="Thought Paths - Find the fastest routes through your mind">
+          <span class="module-icon">🗺️</span>
+          <h3 class="module-title">Thought Paths</h3>
+          <p class="module-subtitle">Map Your Thinking</p>
+          <p class="module-desc">Help ideas travel through your brain! Find the fastest routes from Perception to Expertise using math magic.</p>
+          <div class="module-tags">
+            <span class="tag">Ages 9+</span>
+            <span class="tag">15 min</span>
+            <span class="tag">🗺️ Quest</span>
+          </div>
+          <button class="play-btn" style="background: var(--fun4);">▶ Begin Quest</button>
+        </article>
+        
+        <article class="module-card" role="listitem" onclick="openModule('load')" tabindex="0" aria-label="Brain Power Meter - Balance your mental energy">
+          <span class="module-icon">⚖️</span>
+          <h3 class="module-title">Brain Power Meter</h3>
+          <p class="module-subtitle">Balance Your Mental Energy</p>
+          <p class="module-desc">Learn why homework feels hard sometimes! Balance Intrinsic, Extraneous, and Germane power to become a learning master.</p>
+          <div class="module-tags">
+            <span class="tag">Ages 9+</span>
+            <span class="tag">10 min</span>
+            <span class="tag">⚡ Strategy</span>
+          </div>
+          <button class="play-btn" style="background: var(--fun5);">▶ Power Up</button>
+        </article>
+      </div>
+
+      <!-- Featured Badge Progress -->
+      <section class="progress-section" aria-labelledby="progressTitle">
+        <h3 class="progress-title" id="progressTitle">🏅 Your Trophy Case</h3>
+        <div class="badges-row">
+          <div class="badge earned" title="Word Weaver - Connected 10 concepts">
+            <span class="badge-icon">🕸️</span>
+            <span class="badge-name">Word Weaver</span>
+          </div>
+          <div class="badge earned" title="Spark Detective - Found 5 neuron types">
+            <span class="badge-icon">⚡</span>
+            <span class="badge-name">Spark Detective</span>
+          </div>
+          <div class="badge earned" title="Path Finder - Completed 3 quests">
+            <span class="badge-icon">🗺️</span>
+            <span class="badge-name">Path Finder</span>
+          </div>
+          <div class="badge" title="Balance Master - Beat cognitive overload">
+            <span class="badge-icon">⚖️</span>
+            <span class="badge-name">Balance Master</span>
+          </div>
+          <div class="badge locked" title="Brain Architect - Complete all adventures">
+            <span class="badge-icon">🏗️</span>
+            <span class="badge-name">Brain Architect</span>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Word Web Module (Semantic Network) -->
+    <section id="view-semantic" class="kids-view" aria-labelledby="semanticTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="semanticTitle">🕸️ Word Web Adventure</h2>
+        <p class="view-desc">Tap concepts to activate them! Watch the activation spread like ripples in a pond. Level up to unlock more brain secrets!</p>
+      </header>
+      <div class="canvas-zone">
+        <canvas id="snCanvas" aria-label="Interactive semantic network - click nodes to activate"></canvas>
+        <div class="canvas-toolbar">
+          <button class="toolbar-btn" onclick="snActivateKids('working_memory')">🧠 Working Memory</button>
+          <button class="toolbar-btn" onclick="snActivateKids('attention')">👁️ Attention</button>
+          <button class="toolbar-btn fun" onclick="snActivateKids('spreading_activation')">✨ Spread Magic</button>
+          <button class="toolbar-btn fun" onclick="snAdvanceScaffoldKids()">🔓 Unlock Level</button>
+        </div>
+      </div>
+      <div class="controls-area">
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Choose a concept to activate</span>
+            <span class="control-value" id="snConceptDisplay">Working Memory</span>
+          </div>
+          <select class="big-slider" id="snConceptSelect" onchange="document.getElementById('snConceptDisplay').textContent = this.options[this.selectedIndex].text">
+            <option value="working_memory">🧠 Working Memory</option>
+            <option value="attention">👁️ Attention</option>
+            <option value="spreading_activation">✨ Spreading Activation</option>
+            <option value="semantic_priming">🔗 Semantic Priming</option>
+            <option value="schema">📦 Schema</option>
+            <option value="mental_model">🏗️ Mental Model</option>
+            <option value="cognitive_load">⚖️ Cognitive Load</option>
+            <option value="dual_coding">🎨 Dual Coding</option>
+            <option value="elaboration">🔍 Elaboration</option>
+            <option value="retrieval_practice">🎯 Retrieval Practice</option>
+            <option value="spaced_repetition">⏰ Spaced Repetition</option>
+            <option value="interleaving">🔀 Interleaving</option>
+            <option value="metacognition">🤔 Metacognition</option>
+            <option value="transfer">🚀 Transfer</option>
+          </select>
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Activation Power</span>
+            <span class="control-value" id="snPowerValue">100%</span>
+          </div>
+          <input type="range" class="big-slider" id="snPowerSlider" min="0" max="100" value="100" oninput="document.getElementById('snPowerValue').textContent = this.value + '%'">
+        </div>
+      </div>
+      <div style="text-align: center; margin: 1rem 0;">
+        <button class="toolbar-btn fun" style="padding: 1rem 2rem; font-size: 1.2rem;" onclick="snActivateKids(document.getElementById('snConceptSelect').value, parseInt(document.getElementById('snPowerSlider').value)/100)">🚀 Activate Now!</button>
+      </div>
+      <div class="tips-area">
+        <h4 class="tips-title">💡 <span id="snGuidance">Start by exploring Working Memory and Attention — the gatekeepers of your mind!</span></h4>
+        <div class="check-questions" id="snKidsQuestions"></div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">🏅 Word Web Badges</h4>
+        <div class="badges-row">
+          <div class="badge earned" title="First Spark - Activated your first concept"><span class="badge-icon">✨</span><span class="badge-name">First Spark</span></div>
+          <div class="badge earned" title="Web Weaver - Connected 5 concepts"><span class="badge-icon">🕸️</span><span class="badge-name">Web Weaver</span></div>
+          <div class="badge" title="Master Connector - Connect all 14 concepts"><span class="badge-icon">🌟</span><span class="badge-name">Master Connector</span></div>
+          <div class="badge locked" title="Brain Architect - Reach Level 3"><span class="badge-icon">🏗️</span><span class="badge-name">Brain Architect</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Neuron Lab Module (Neural Dynamics) -->
+    <section id="view-neural" class="kids-view" aria-labelledby="neuralTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="neuralTitle">⚡ Neuron Lab</h2>
+        <p class="view-desc">Build living neurons! Watch them spike, connect, and dance. Each type has its own superpower.</p>
+      </header>
+      <div class="canvas-zone">
+        <canvas id="ndCanvas" aria-label="Neuron spike raster - watch neurons fire in real time"></canvas>
+        <div class="canvas-toolbar">
+          <button class="toolbar-btn fun" onclick="ndStartKids()">▶ Start Lab</button>
+          <button class="toolbar-btn" onclick="ndStopKids()">⏸ Pause</button>
+          <button class="toolbar-btn" onclick="ndResetKids()">🔄 Reset</button>
+          <button class="toolbar-btn fun" onclick="ndRandomInputKids()">🎲 Surprise Input!</button>
+        </div>
+      </div>
+      <div class="controls-area">
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Simulation Speed</span>
+            <span class="control-value" id="ndSpeedValue">1x</span>
+          </div>
+          <input type="range" class="big-slider" id="ndSpeedSlider" min="1" max="10" value="1" oninput="document.getElementById('ndSpeedValue').textContent = this.value + 'x'; if(ndInstance) ndInstance.setSpeed(parseInt(this.value))">
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Focus Neuron Type</span>
+            <span class="control-value" id="ndTypeDisplay">All Types</span>
+          </div>
+          <select class="big-slider" id="ndTypeSelect" onchange="document.getElementById('ndTypeDisplay').textContent = this.options[this.selectedIndex].text; if(ndInstance) ndInstance.setFilter(this.value)">
+            <option value="all">🌈 All Types</option>
+            <option value="RegularSpiking">🔴 Regular Spiking (Pyramidal)</option>
+            <option value="FastSpiking">🟠 Fast Spiking (Interneuron)</option>
+            <option value="LowThresholdSpiking">🟡 Low-Threshold (Thalamic)</option>
+            <option value="IntrinsicallyBursting">🟢 Bursting (Cortical L5)</option>
+            <option value="Chattering">🔵 Chattering (Visual)</option>
+            <option value="Resonator">🟣 Resonator (Subthalamic)</option>
+          </select>
+        </div>
+      </div>
+      <div class="tips-area">
+        <h4 class="tips-title">🧪 <span id="ndGuidance">Neuron Superpowers Guide</span></h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.9rem;">
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #ef4444;"><strong>🔴 Regular Spiking</strong><br>The reliable worker — adapts to steady input</div>
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #f97316;"><strong>🟠 Fast Spiking</strong><br>The speed demon — fires 100+ times/second!</div>
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #eab308;"><strong>🟡 Low-Threshold</strong><br>The rebound king — wakes up after silence</div>
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #22c55e;"><strong>🟢 Bursting</strong><br>The fireworks — rapid-fire bursts!</div>
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #06b6d4;"><strong>🔵 Chattering</strong><br>The visual artist — high-freq chatter</div>
+          <div style="padding: 0.75rem; background: #fff; border-radius: 12px; border-left: 4px solid #a855f7;"><strong>🟣 Resonator</strong><br>The rhythm keeper — dances to subthreshold beats</div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">🏅 Neuron Lab Badges</h4>
+        <div class="badges-row">
+          <div class="badge earned" title="First Spike - Saw your first action potential"><span class="badge-icon">⚡</span><span class="badge-name">First Spike</span></div>
+          <div class="badge earned" title="Type Spotter - Identified 3 neuron types"><span class="badge-icon">🔬</span><span class="badge-name">Type Spotter</span></div>
+          <div class="badge" title="E/I Balancer - Balanced excitation & inhibition"><span class="badge-icon">⚖️</span><span class="badge-name">E/I Balancer</span></div>
+          <div class="badge locked" title="Neuro Maestro - Master all 6 types"><span class="badge-icon">🎭</span><span class="badge-name">Neuro Maestro</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Thought Paths Module (Graph Algorithms) -->
+    <section id="view-graph" class="kids-view" aria-labelledby="graphTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="graphTitle">🗺️ Thought Paths Quest</h2>
+        <p class="view-desc">Help ideas travel through your brain! Find the fastest routes from Perception to Expertise using Dijkstra's algorithm magic.</p>
+      </header>
+      <div class="canvas-zone">
+        <canvas id="gaCanvas" aria-label="Cognitive graph - click to find paths between brain regions"></canvas>
+        <div class="canvas-toolbar">
+          <button class="toolbar-btn fun" onclick="gaRunDijkstraKids()">🚀 Find Path</button>
+          <button class="toolbar-btn" onclick="gaNextStepKids()">➡ Next Step</button>
+          <button class="toolbar-btn" onclick="gaResetKids()">🔄 New Quest</button>
+          <button class="toolbar-btn" onclick="gaRunTarjanKids()">🔍 Find Clusters</button>
+        </div>
+      </div>
+      <div class="controls-area">
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Starting Region</span>
+            <span class="control-value" id="gaSourceDisplay">Perception</span>
+          </div>
+          <select class="big-slider" id="gaSourceSelect" onchange="document.getElementById('gaSourceDisplay').textContent = this.value">
+            <option value="Perception">👁️ Perception</option>
+            <option value="Attention">👁️ Attention</option>
+            <option value="Working Memory">🧠 Working Memory</option>
+            <option value="Long-Term Memory">📚 Long-Term Memory</option>
+            <option value="Language">💬 Language</option>
+            <option value="Reasoning">🤔 Reasoning</option>
+            <option value="Decision Making">🎯 Decision Making</option>
+            <option value="Problem Solving">🧩 Problem Solving</option>
+            <option value="Metacognition">🤔 Metacognition</option>
+            <option value="Learning">📖 Learning</option>
+            <option value="Transfer">🚀 Transfer</option>
+            <option value="Expertise">🏆 Expertise</option>
+          </select>
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">Destination (optional)</span>
+            <span class="control-value" id="gaTargetDisplay">Auto</span>
+          </div>
+          <select class="big-slider" id="gaTargetSelect" onchange="document.getElementById('gaTargetDisplay').textContent = this.value === '' ? 'Auto (find all)' : this.value">
+            <option value="">🌟 Find All Paths</option>
+            <option value="Perception">👁️ Perception</option>
+            <option value="Attention">👁️ Attention</option>
+            <option value="Working Memory">🧠 Working Memory</option>
+            <option value="Long-Term Memory">📚 Long-Term Memory</option>
+            <option value="Language">💬 Language</option>
+            <option value="Reasoning">🤔 Reasoning</option>
+            <option value="Decision Making">🎯 Decision Making</option>
+            <option value="Problem Solving">🧩 Problem Solving</option>
+            <option value="Metacognition">🤔 Metacognition</option>
+            <option value="Learning">📖 Learning</option>
+            <option value="Transfer">🚀 Transfer</option>
+            <option value="Expertise">🏆 Expertise</option>
+          </select>
+        </div>
+      </div>
+      <div class="tips-area">
+        <h4 class="tips-title">🗺️ Quest Log</h4>
+        <div id="gaStepsKids" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">🏅 Quest Badges</h4>
+        <div class="badges-row">
+          <div class="badge earned" title="First Step - Found your first path"><span class="badge-icon">👣</span><span class="badge-name">First Step</span></div>
+          <div class="badge earned" title="Speed Runner - Completed 5 quests"><span class="badge-icon">🏃</span><span class="badge-name">Speed Runner</span></div>
+          <div class="badge" title="Cluster Hunter - Found all brain clusters"><span class="badge-icon">🔍</span><span class="badge-name">Cluster Hunter</span></div>
+          <div class="badge locked" title="Grand Navigator - Master all paths"><span class="badge-icon">🧭</span><span class="badge-name">Grand Navigator</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Brain Power Meter Module (Cognitive Load) -->
+    <section id="view-load" class="kids-view" aria-labelledby="loadTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="loadTitle">⚖️ Brain Power Meter</h2>
+        <p class="view-desc">Balance your mental energy! Learn why some homework feels impossible and how to make learning easier.</p>
+      </header>
+      <div class="canvas-zone">
+        <canvas id="clCanvas" aria-label="Brain power meter - three colored bars showing mental load"></canvas>
+        <div class="canvas-toolbar">
+          <button class="toolbar-btn fun" onclick="clSimulateKids()">🧪 Test My Brain</button>
+          <button class="toolbar-btn" onclick="clResetKids()">🔄 Reset</button>
+          <button class="toolbar-btn fun" onclick="clRandomTask()">🎲 Random Homework!</button>
+        </div>
+      </div>
+      <div class="controls-area">
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">🧩 Task Pieces <span id="clPiecesValue">5</span></span>
+          </div>
+          <input type="range" class="big-slider" id="clPieces" min="1" max="20" value="5" oninput="document.getElementById('clPiecesValue').textContent = this.value">
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">🔗 How Connected? <span id="clConnectValue">70%</span></span>
+          </div>
+          <input type="range" class="big-slider" id="clConnect" min="0" max="100" value="70" oninput="document.getElementById('clConnectValue').textContent = this.value + '%'">
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">📚 How Well Explained? <span id="clExplainValue">60%</span></span>
+          </div>
+          <input type="range" class="big-slider" id="clExplain" min="0" max="100" value="60" oninput="document.getElementById('clExplainValue').textContent = this.value + '%'">
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">🎓 Your Skill Level <span id="clSkillValue">30%</span></span>
+          </div>
+          <input type="range" class="big-slider" id="clSkill" min="0" max="100" value="30" oninput="document.getElementById('clSkillValue').textContent = this.value + '%'">
+        </div>
+        <div class="control-card">
+          <div class="control-label">
+            <span class="control-label-text">⏰ Time Pressure <span id="clRushValue">0%</span></span>
+          </div>
+          <input type="range" class="big-slider" id="clRush" min="0" max="100" value="0" oninput="document.getElementById('clRushValue').textContent = this.value + '%'; if(clsInstance) clsInstance.setRush(this.value/100)">
+        </div>
+      </div>
+      <div style="text-align: center; margin: 1rem 0;">
+        <button class="toolbar-btn fun" style="padding: 1rem 2rem; font-size: 1.2rem;" onclick="clSimulateKids()">🧠 Measure My Brain Power!</button>
+      </div>
+      <div class="results-grid" role="region" aria-label="Brain power results">
+        <div class="result-card" id="clIntrinsicCard">
+          <div class="result-icon">🧩</div>
+          <div class="result-value" id="clIntrinsicVal">0.0</div>
+          <div class="result-label">Intrinsic Load</div>
+        </div>
+        <div class="result-card" id="clExtraneousCard">
+          <div class="result-icon">😵‍💫</div>
+          <div class="result-value" id="clExtraneousVal">0.0</div>
+          <div class="result-label">Extraneous Load</div>
+        </div>
+        <div class="result-card success" id="clGermaneCard">
+          <div class="result-icon">🌱</div>
+          <div class="result-value" id="clGermaneVal">0.0</div>
+          <div class="result-label">Germane Power</div>
+        </div>
+        <div class="result-card" id="clTotalCard">
+          <div class="result-icon">⚡</div>
+          <div class="result-value" id="clTotalVal">0.0</div>
+          <div class="result-label">Total Load</div>
+        </div>
+      </div>
+      <div class="tips-area">
+        <h4 class="tips-title">🧭 <span id="clGuidance">Your Brain Coach Says:</span></h4>
+        <div id="clTips" class="check-questions"></div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">📊 Your Learning Stats</h4>
+        <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+          <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 900; color: #a855f7;" id="clSchemas">0</div>
+            <div style="color: #374151; font-weight: 700;">Schemas Built</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 900; color: #22c55e;" id="clAuto">0%</div>
+            <div style="color: #374151; font-weight: 700;">Automation</div>
+          </div>
+          <div style="text-align: center;">
+            <div style="font-size: 2.5rem; font-weight: 900; color: #ef4444;" id="clOverloads">0</div>
+            <div style="color: #374151; font-weight: 700;">Overloads Avoided</div>
+          </div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">🏅 Power Meter Badges</h4>
+        <div class="badges-row">
+          <div class="badge earned" title="First Measure - Checked your brain power"><span class="badge-icon">📏</span><span class="badge-name">First Measure</span></div>
+          <div class="badge" title="Balance Master - Kept load under capacity 5 times"><span class="badge-icon">⚖️</span><span class="badge-name">Balance Master</span></div>
+          <div class="badge" title="Schema Builder - Built 10 schemas"><span class="badge-icon">🏗️</span><span class="badge-name">Schema Builder</span></div>
+          <div class="badge locked" title="Zen Learner - Never overload"><span class="badge-icon">🧘</span><span class="badge-name">Zen Learner</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Progress View -->
+    <section id="view-progress" class="kids-view" aria-labelledby="progressViewTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="progressViewTitle">📊 Your Science Journey</h2>
+        <p class="view-desc">Track your growth, earn badges, and see how far you've come!</p>
+      </header>
+      <div class="results-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="result-card">
+          <div class="result-icon">🧠</div>
+          <div class="result-value" id="progModules">4</div>
+          <div class="result-label">Adventures Started</div>
+        </div>
+        <div class="result-card">
+          <div class="result-icon">⏱️</div>
+          <div class="result-value" id="progTime">45 min</div>
+          <div class="result-label">Time Exploring</div>
+        </div>
+        <div class="result-card success">
+          <div class="result-icon">🔥</div>
+          <div class="result-value" id="progStreak">7</div>
+          <div class="result-label">Day Streak</div>
+        </div>
+        <div class="result-card">
+          <div class="result-icon">🏆</div>
+          <div class="result-value" id="progBadges">9</div>
+          <div class="result-label">Badges Earned</div>
+        </div>
+      </div>
+      <div class="progress-section">
+        <h4 class="progress-title">🏅 Complete Trophy Case</h4>
+        <div class="badges-row" id="allBadges"></div>
+      </div>
+      <div class="tips-area">
+        <h4 class="tips-title">🎯 Next Milestones</h4>
+        <div class="check-questions" id="nextGoals"></div>
+      </div>
+    </section>
+
+    <!-- Parents View -->
+    <section id="view-parents" class="kids-view" aria-labelledby="parentsTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="parentsTitle">👨‍👩‍👧 Parent & Teacher Hub</h2>
+        <p class="view-desc">Monitor progress, understand the science, and support your young explorer!</p>
+      </header>
+      <div class="controls-area">
+        <div class="control-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">📚 What Your Child Is Learning</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            <div style="background: #f0fdf4; border: 2px solid #86efac; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #166534; margin-bottom: 0.5rem;">🕸️ Word Web — Semantic Memory</h4>
+              <p style="color: #374151; font-size: 0.9rem; line-height: 1.6;">Based on <strong>Spreading Activation Theory</strong> (Collins & Loftus, 1975). Teaches how concepts prime each other in memory. Kids learn: semantic networks, priming, schemas, retrieval practice, metacognition.</p>
+              <div style="margin-top: 1rem; font-size: 0.85rem; color: #166534;"><strong>Curriculum Links:</strong> Psychology, Cognitive Science, Study Skills</div>
+            </div>
+            <div style="background: #fef3c7; border: 2px solid #fcd34d; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #92400e; margin-bottom: 0.5rem;">⚡ Neuron Lab — Computational Neuroscience</h4>
+              <p style="color: #374151; font-size: 0.9rem; line-height: 1.6;">Based on <strong>Izhikevich Neuron Model</strong> (2003). 6 biologically-plausible neuron types with real spiking dynamics. Kids learn: action potentials, E/I balance, neuron diversity, network dynamics.</p>
+              <div style="margin-top: 1rem; font-size: 0.85rem; color: #92400e;"><strong>Curriculum Links:</strong> Biology, Neuroscience, Physics, Computer Science</div>
+            </div>
+            <div style="background: #ede9fe; border: 2px solid #c4b5fd; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #6d28d9; margin-bottom: 0.5rem;">🗺️ Thought Paths — Graph Theory</h4>
+              <p style="color: #374151; font-size: 0.9rem; line-height: 1.6;">Dijkstra's algorithm on cognitive architecture graphs. Kids learn: shortest paths, cognitive process flow, algorithmic thinking, brain connectivity.</p>
+              <div style="margin-top: 1rem; font-size: 0.85rem; color: #6d28d9;"><strong>Curriculum Links:</strong> Mathematics, Computer Science, Psychology</div>
+            </div>
+            <div style="background: #fef3c7; border: 2px solid #fcd34d; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #92400e; margin-bottom: 0.5rem;">⚖️ Brain Power Meter — Cognitive Load Theory</h4>
+              <p style="color: #374151; font-size: 0.9rem; line-height: 1.6;">Based on <strong>Cognitive Load Theory</strong> (Sweller, 1988). Intrinsic/Extraneous/Germane load, schema acquisition, automation. Kids learn: why learning feels hard, how to study smarter.</p>
+              <div style="margin-top: 1rem; font-size: 0.85rem; color: #92400e;"><strong>Curriculum Links:</strong> Study Skills, Educational Psychology, Executive Function</div>
+            </div>
+          </div>
+        </div>
+        <div class="control-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">🛡️ Safety & Privacy</h3>
+          <ul style="color: #374151; line-height: 2; padding-left: 1.5rem;">
+            <li><strong>No personal data collected</strong> — All progress stored locally in browser</li>
+            <li><strong>No accounts required</strong> — Play instantly, no sign-up</li>
+            <li><strong>No ads, no tracking</strong> — Pure educational experience</li>
+            <li><strong>Offline capable</strong> — Works without internet after first load</li>
+            <li><strong>COPPA/GDPR compliant</strong> — Designed for children's privacy</li>
+          </ul>
+        </div>
+        <div class="control-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">🎯 Learning Objectives by Age</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="background: #f0fdf4; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #166534;">Ages 8-10 (Grades 3-5)</h4>
+              <ul style="color: #374151; line-height: 2; padding-left: 1.5rem; font-size: 0.9rem;">
+                <li>Vocabulary building & word connections</li>
+                <li>Basic brain anatomy awareness</li>
+                <li>Simple pathfinding & logic</li>
+                <li>Introduction to "brain power" concept</li>
+              </ul>
+            </div>
+            <div style="background: #fef3c7; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #92400e;">Ages 10-13 (Grades 6-8)</h4>
+              <ul style="color: #374151; line-height: 2; padding-left: 1.5rem; font-size: 0.9rem;">
+                <li>Semantic networks & memory strategies</li>
+                <li>Neuron types & brain electricity</li>
+                <li>Graph algorithms & computational thinking</li>
+                <li>Study skills & cognitive load management</li>
+              </ul>
+            </div>
+            <div style="background: #ede9fe; border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #6d28d9;">Ages 13+ (Grades 9+)</h4>
+              <ul style="color: #374151; line-height: 2; padding-left: 1.5rem; font-size: 0.9rem;">
+                <li>Advanced cognitive architecture</li>
+                <li>Computational neuroscience basics</li>
+                <li>Algorithmic complexity & optimization</li>
+                <li>Metacognition & self-regulated learning</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="control-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">📖 Recommended Reading & Resources</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #166534;">For Kids</h4>
+              <ul style="color: #374151; line-height: 2; padding-left: 1.5rem; font-size: 0.9rem;">
+                <li>"Your Fantastic Elastic Brain" by JoAnn Deak</li>
+                <li>"The Brain: The Ultimate Thinking Machine" by Tory Woollcott</li>
+                <li>"Neuroscience for Kids" (website)</li>
+              </ul>
+            </div>
+            <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem;">
+              <h4 style="color: #166534;">For Parents/Educators</h4>
+              <ul style="color: #374151; line-height: 2; padding-left: 1.5rem; font-size: 0.9rem;">
+                <li>"Why Don't Students Like School?" by Daniel Willingham</li>
+                <li>"Cognitive Load Theory" by Sweller et al.</li>
+                <li>"Principles of Neural Science" by Kandel et al.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="badgeModal" role="dialog" aria-modal="true" aria-labelledby="badgeModalTitle">
+    <div class="modal">
+      <header class="modal-header">
+        <h3 class="modal-title" id="badgeModalTitle">🏆 Badge Details</h3>
+        <button class="close-btn" onclick="closeModal('badgeModal')" aria-label="Close">×</button>
+      </header>
+      <div id="badgeModalContent"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="progressModal" role="dialog" aria-modal="true" aria-labelledby="progressModalTitle">
+    <div class="modal">
+      <header class="modal-header">
+        <h3 class="modal-title" id="progressModalTitle">📈 Your Progress</h3>
+        <button class="close-btn" onclick="closeModal('progressModal')" aria-label="Close">×</button>
+      </header>
+      <div id="progressModalContent"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <p style="font-weight: 700; margin-bottom: 0.5rem;">Brain Explorer Kids</p>
+      <p style="color: #86efac; font-size: 0.9rem;">Discover Your Thinking Superpowers! 🧠✨</p>
+      <div class="footer-links">
+        <a href="https://github.com/myzticalbabe/wasm-education" class="footer-link" target="_blank">💻 Source Code</a>
+        <a href="https://github.com/myzticalbabe/wasm-education/blob/main/LICENSE" class="footer-link" target="_blank">📜 SOUL FORGE License</a>
+        <a href="https://github.com/myzticalbabe" class="footer-link" target="_blank">👨‍💻 @myzticalbabe</a>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.8rem; color: #6b8a6b;">Built with Rust 🦀 + Go 🐹 → WASM • Canvas 2D • Zero Tracking • Privacy First</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE & CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
+let currentView = 'home';
+let animationFrames = {};
+
+// Module instances
+let snInstance = null, ndInstance = null, gavInstance = null, clsInstance = null;
+
+// Badge data
+const badgeData = {
+  'first-spark': { icon: '✨', name: 'First Spark', desc: 'Activated your first concept!', earned: true, module: 'semantic' },
+  'web-weaver': { icon: '🕸️', name: 'Web Weaver', desc: 'Connected 5 concepts in the Word Web', earned: true, module: 'semantic' },
+  'master-connector': { icon: '🌟', name: 'Master Connector', desc: 'Connected all 14 concepts', earned: false, module: 'semantic' },
+  'brain-architect-sn': { icon: '🏗️', name: 'Brain Architect (Word Web)', desc: 'Reached Level 3 scaffold', earned: false, module: 'semantic' },
+  'first-spike': { icon: '⚡', name: 'First Spike', desc: 'Witnessed your first action potential!', earned: true, module: 'neural' },
+  'type-spotter': { icon: '🔬', name: 'Type Spotter', desc: 'Identified 3 neuron types', earned: true, module: 'neural' },
+  'ei-balancer': { icon: '⚖️', name: 'E/I Balancer', desc: 'Balanced excitation & inhibition', earned: false, module: 'neural' },
+  'neuro-maestro': { icon: '🎭', name: 'Neuro Maestro', desc: 'Mastered all 6 neuron types', earned: false, module: 'neural' },
+  'first-step': { icon: '👣', name: 'First Step', desc: 'Found your first thought path', earned: true, module: 'graph' },
+  'speed-runner': { icon: '🏃', name: 'Speed Runner', desc: 'Completed 5 graph quests', earned: true, module: 'graph' },
+  'cluster-hunter': { icon: '🔍', name: 'Cluster Hunter', desc: 'Found all brain clusters', earned: false, module: 'graph' },
+  'grand-navigator': { icon: '🧭', name: 'Grand Navigator', desc: 'Mastered all thought paths', earned: false, module: 'graph' },
+  'first-measure': { icon: '📏', name: 'First Measure', desc: 'Checked your brain power', earned: true, module: 'load' },
+  'balance-master': { icon: '⚖️', name: 'Balance Master', desc: 'Kept load under capacity 5 times', earned: false, module: 'load' },
+  'schema-builder': { icon: '🏗️', name: 'Schema Builder', desc: 'Built 10 schemas', earned: false, module: 'load' },
+  'zen-learner': { icon: '🧘', name: 'Zen Learner', desc: 'Never overloaded your brain', earned: false, module: 'load' },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize module instances
+  snInstance = new SemanticNetworkJS();
+  ndInstance = new NeuralDynamicsJS(50);
+  gavInstance = new GraphAlgorithmVisualizerJS();
+  clsInstance = new CognitiveLoadSimulatorJS();
+  
+  // Load saved progress
+  loadProgress();
+  
+  // Render badges
+  renderBadges();
+  renderProgressBadges();
+  renderNextGoals();
+  
+  // Initialize accessibility
+  initAccessibility();
+  
+  // Setup nav
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.view));
+  });
+  
+  // Setup module card clicks
+  document.querySelectorAll('.module-card').forEach(card => {
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.click();
+      }
+    });
+  });
+  
+  // Gamification bar
+  document.getElementById('btnBadges').addEventListener('click', () => openModal('badgeModal'));
+  document.getElementById('btnProgress').addEventListener('click', () => openModal('progressModal'));
+  
+  // Setup slider listeners
+  setupSliders();
+  
+  // Announce ready
+  speak('Brain Explorer Kids ready! Choose your adventure!');
+});
+
+function loadProgress() {
+  const saved = localStorage.getItem('brainExplorerProgress');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      Object.keys(data).forEach(key => {
+        if (badgeData[key]) badgeData[key].earned = data[key];
+      });
+    } catch (e) { console.warn('Could not load progress'); }
+  }
+  // Update XP display
+  const earned = Object.values(badgeData).filter(b => b.earned).length;
+  document.getElementById('totalXP').textContent = (earned * 125 + 500).toLocaleString();
+  document.getElementById('modulesDone').textContent = new Set(Object.values(badgeData).filter(b => b.earned).map(b => b.module)).size;
+}
+
+function saveProgress() {
+  const data = {};
+  Object.entries(badgeData).forEach(([key, val]) => { data[key] = val.earned; });
+  localStorage.setItem('brainExplorerProgress', JSON.stringify(data));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VIEW MANAGEMENT
+// ─────────────────────────────────────────────────────────────────────────────
+function showView(viewName) {
+  currentView = viewName;
+  
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const active = btn.dataset.view === viewName;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
+  });
+  
+  document.querySelectorAll('.kids-view').forEach(view => {
+    view.classList.toggle('active', view.id === 'view-' + viewName);
+  });
+  
+  // Stop animations
+  Object.values(animationFrames).forEach(cancelAnimationFrame);
+  animationFrames = {};
+  
+  // View-specific init
+  if (viewName === 'home') {
+    updateHeroStats();
+  } else if (viewName === 'progress') {
+    renderProgressView();
+  }
+}
+
+function openModule(moduleId) {
+  const map = {
+    'semantic': 'semantic',
+    'neural': 'neural', 
+    'graph': 'graph',
+    'load': 'load'
+  };
+  showView(map[moduleId]);
+  speak(`Starting ${document.querySelector(`[onclick*="${moduleId}"] .module-title`)?.textContent || moduleId}!`);
+}
+
+function showView(viewName) {
+  currentView = viewName;
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const active = btn.dataset.view === viewName;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active);
+  });
+  document.querySelectorAll('.kids-view').forEach(view => {
+    view.classList.toggle('active', view.id === 'view-' + viewName);
+  });
+  Object.values(animationFrames).forEach(cancelAnimationFrame);
+  animationFrames = {};
+  
+  if (viewName === 'home') updateHeroStats();
+  if (viewName === 'progress') renderProgressView();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEMANTIC NETWORK (Kids Version)
+// ─────────────────────────────────────────────────────────────────────────────
+class SemanticNetworkJS {
+  constructor() {
+    this.nodes = new Map();
+    this.edges = new Map();
+    this.activation = new Map();
+    this.labels = new Map();
+    this.scaffold = {
+      level: 1,
+      revealedConcepts: ['working_memory', 'attention'],
+      hiddenConcepts: ['spreading_activation', 'schema', 'metacognition'],
+      guidance: 'Start by exploring Working Memory and Attention — the gatekeepers of your mind!',
+      checkQuestions: [{
+        question: 'What limits how much you can hold in Working Memory?',
+        answerType: 'MultipleChoice',
+        options: ['Your age', 'Cognitive load and attention', 'How smart you are', 'The time of day'],
+        correctAnswer: 'Cognitive load and attention',
+        explanation: 'Working Memory holds about 4 things at once. Too much cognitive load makes it overflow!',
+        conceptTested: 'working_memory'
+      }]
+    };
+    this.initializeCoreNetwork();
+  }
+
+  initializeCoreNetwork() {
+    const concepts = [
+      {id: 'working_memory', concept: 'Working Memory', type: 'Concept', tags: ['memory', 'focus']},
+      {id: 'long_term_memory', concept: 'Long-Term Memory', type: 'Concept', tags: ['memory', 'storage']},
+      {id: 'attention', concept: 'Attention', type: 'Process', tags: ['focus', 'filter']},
+      {id: 'spreading_activation', concept: 'Spreading Activation', type: 'Process', tags: ['connections', 'priming']},
+      {id: 'semantic_priming', concept: 'Semantic Priming', type: 'Concept', tags: ['priming', 'speed']},
+      {id: 'schema', concept: 'Schema', type: 'Category', tags: ['organization', 'framework']},
+      {id: 'mental_model', concept: 'Mental Model', type: 'Concept', tags: ['simulation', 'understanding']},
+      {id: 'cognitive_load', concept: 'Cognitive Load', type: 'Concept', tags: ['capacity', 'difficulty']},
+      {id: 'dual_coding', concept: 'Dual Coding', type: 'Theorem', tags: ['visual', 'verbal']},
+      {id: 'elaboration', concept: 'Elaboration', type: 'Process', tags: ['deep', 'meaning']},
+      {id: 'retrieval_practice', concept: 'Retrieval Practice', type: 'Algorithm', tags: ['recall', 'strengthen']},
+      {id: 'spaced_repetition', concept: 'Spaced Repetition', type: 'Algorithm', tags: ['timing', 'memory']},
+      {id: 'interleaving', concept: 'Interleaving', type: 'Algorithm', tags: ['mixing', 'variety']},
+      {id: 'metacognition', concept: 'Metacognition', type: 'MetaCognition', tags: ['thinking', 'awareness']},
+      {id: 'transfer', concept: 'Transfer', type: 'Concept', tags: ['apply', 'new situations']},
+    ];
+
+    concepts.forEach(c => {
+      this.nodes.set(c.id, {id: c.id, concept: c.concept, nodeType: c.type, weight: 1.0, tags: c.tags});
+      this.labels.set(c.id, {text: c.concept, conceptType: c.type === 'Theorem' ? 'Theorem' : c.type === 'Process' ? 'Algorithm' : c.type === 'Category' ? 'Definition' : 'Definition', difficulty: 'Intermediate', prerequisites: [], learningObjectives: ['Understand ' + c.concept], cognitiveLoad: 0.5, semanticTags: c.tags});
+      this.activation.set(c.id, 0.0);
+      this.edges.set(c.id, []);
+    });
+
+    const relations = [
+      ['working_memory', 'long_term_memory', 'saves to', 0.8, true],
+      ['working_memory', 'attention', 'guided by', 0.9, true],
+      ['attention', 'spreading_activation', 'controls', 0.7, true],
+      ['spreading_activation', 'semantic_priming', 'causes', 0.85, true],
+      ['schema', 'mental_model', 'builds', 0.75, true],
+      ['cognitive_load', 'working_memory', 'limits', 0.9, true],
+      ['dual_coding', 'working_memory', 'doubles capacity', 0.8, true],
+      ['elaboration', 'long_term_memory', 'strengthens', 0.85, true],
+      ['retrieval_practice', 'long_term_memory', 'locks in', 0.9, true],
+      ['spaced_repetition', 'retrieval_practice', 'schedules', 0.8, true],
+      ['interleaving', 'retrieval_practice', 'mixes up', 0.7, true],
+      ['metacognition', 'retrieval_practice', 'monitors', 0.75, true],
+      ['transfer', 'mental_model', 'applies', 0.8, true],
+      ['schema', 'transfer', 'enables', 0.7, true],
+    ];
+
+    relations.forEach(([src, tgt, relation, strength, bidir]) => {
+      this.edges.get(src).push({target: tgt, relation, strength, bidirectional: bidir});
+      if (bidir) this.edges.get(tgt).push({target: src, relation, strength, bidirectional: true});
+    });
+  }
+
+  activate(conceptId, initialActivation = 1.0) {
+    if (!this.nodes.has(conceptId)) return null;
+    this.activation.forEach((v, k) => this.activation.set(k, 0.0));
+    this.activation.set(conceptId, initialActivation);
+    
+    for (let i = 0; i < 3; i++) {
+      const newAct = new Map(this.activation);
+      this.edges.forEach((edges, src) => {
+        const srcAct = this.activation.get(src) || 0;
+        edges.forEach(edge => {
+          const spread = srcAct * edge.strength * 0.3;
+          const current = newAct.get(edge.target) || 0;
+          newAct.set(edge.target, Math.min(current + spread, 1.0));
+          if (edge.bidirectional) {
+            const backSpread = (this.activation.get(edge.target) || 0) * edge.strength * 0.3;
+            const currentSrc = newAct.get(src) || 0;
+            newAct.set(src, Math.min(currentSrc + backSpread, 1.0));
+          }
+        });
+      });
+      this.activation = newAct;
+    }
+    return Object.fromEntries(this.activation);
+  }
+
+  advanceScaffold() {
+    this.scaffold.level++;
+    if (this.scaffold.level === 2) {
+      this.scaffold.revealedConcepts.push('spreading_activation', 'schema');
+      this.scaffold.hiddenConcepts = this.scaffold.hiddenConcepts.filter(c => c !== 'spreading_activation' && c !== 'schema');
+      this.scaffold.guidance = 'Explore Spreading Activation — how concepts wake each other up through connections!';
+      this.scaffold.checkQuestions.push({
+        question: 'How does Semantic Priming show spreading activation?',
+        answerType: 'MultipleChoice',
+        options: ['Faster recognition of related words', 'Slower recognition of unrelated words', 'No effect on recognition', 'Only affects visual processing'],
+        correctAnswer: 'Faster recognition of related words',
+        explanation: 'Priming wakes up related concepts, making them faster to recognize!',
+        conceptTested: 'semantic_priming'
+      });
+    } else if (this.scaffold.level === 3) {
+      this.scaffold.revealedConcepts.push('metacognition');
+      this.scaffold.hiddenConcepts = this.scaffold.hiddenConcepts.filter(c => c !== 'metacognition');
+      this.scaffold.guidance = 'Metacognition — thinking about your thinking! Try the retrieval practice questions.';
+      this.scaffold.checkQuestions.push({
+        question: 'What is the "Testing Effect"?',
+        answerType: 'MultipleChoice',
+        options: ['Testing makes you nervous', 'Retrieval practice strengthens memory more than re-reading', 'Tests are bad for learning', 'Only teachers should test'],
+        correctAnswer: 'Retrieval practice strengthens memory more than re-reading',
+        explanation: 'Active recall creates stronger memory traces than passive review (Roediger & Karpicke, 2006)!',
+        conceptTested: 'retrieval_practice'
+      });
+    }
+  }
+
+  getGraphData() {
+    const rng = new SeededRandom(42);
+    const nodes = [];
+    this.nodes.forEach((node, id) => {
+      const label = this.labels.get(id);
+      nodes.push({id: node.id, label: node.concept, x: rng.nextFloat() * 600 - 300, y: rng.nextFloat() * 600 - 300, nodeType: node.nodeType, activation: this.activation.get(id) || 0, semanticTags: label.semanticTags});
+    });
+    const edges = [];
+    this.edges.forEach((edgeList, src) => {
+      edgeList.forEach(edge => edges.push({source: src, target: edge.target, relation: edge.relation, strength: edge.strength}));
+    });
+    return {nodes, edges};
+  }
+
+  getScaffold() { return this.scaffold; }
+}
+
+class SeededRandom {
+  constructor(seed) { this.seed = seed; }
+  nextFloat() { this.seed = (this.seed * 1664525 + 1013904223) >>> 0; return this.seed / 0x100000000; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NEURAL DYNAMICS (Kids)
+// ─────────────────────────────────────────────────────────────────────────────
+class NeuralDynamicsJS {
+  constructor(numNeurons = 50) {
+    this.numNeurons = numNeurons;
+    this.neurons = [];
+    this.connections = [];
+    this.time = 0;
+    this.dt = 0.1;
+    this.speed = 1;
+    this.running = false;
+    this.filter = 'all';
+    this.canvas = document.getElementById('ndCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+    this.initializeNetwork(numNeurons);
+  }
+
+  initializeNetwork(n) {
+    const types = ['RegularSpiking', 'FastSpiking', 'LowThresholdSpiking', 'IntrinsicallyBursting', 'Chattering', 'Resonator'];
+    const params = {
+      RegularSpiking: {a:0.02,b:0.2,c:-65,d:8, color:'#ef4444'},
+      FastSpiking: {a:0.1,b:0.2,c:-65,d:2, color:'#f97316'},
+      LowThresholdSpiking: {a:0.02,b:0.25,c:-65,d:2, color:'#eab308'},
+      IntrinsicallyBursting: {a:0.02,b:0.2,c:-55,d:4, color:'#22c55e'},
+      Chattering: {a:0.02,b:0.2,c:-50,d:2, color:'#06b6d4'},
+      Resonator: {a:0.1,b:0.26,c:-65,d:2, color:'#a855f7'}
+    };
+    const rng = new SeededRandom(Date.now());
+    for (let i = 0; i < n; i++) {
+      const type = types[i % types.length];
+      const p = params[type];
+      this.neurons.push({v:-65, u:p.b*-65, ...p, type, firingHistory: [], color: p.color});
+    }
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (i !== j && rng.nextFloat() < 0.1) {
+          const exc = rng.nextFloat() < 0.8;
+          this.connections.push({from:i, to:j, weight:rng.nextFloat()*4.5+0.5, delay:rng.nextFloat()*4+1, exc});
+        }
+      }
+    }
+    this.draw();
+  }
+
+  resize() {
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    this.canvas.width = rect.width;
+    this.canvas.height = 400;
+  }
+
+  step() {
+    this.neurons.forEach((n, i) => {
+      n.v += this.dt * this.speed * (0.04*n.v*n.v + 5*n.v + 140 - n.u);
+      n.u += this.dt * this.speed * (n.a * (n.b*n.v - n.u));
+      if (n.v >= 30) {
+        n.firingHistory.push(this.time);
+        n.v = n.c; n.u += n.d;
+        this.connections.filter(c => c.from === i).forEach(conn => {
+          const t = this.neurons[conn.to];
+          let w = conn.exc ? conn.weight : -conn.weight;
+          t.v += w * 0.1;
+        });
+      }
+      if (n.firingHistory.length > 1000) n.firingHistory = n.firingHistory.slice(-500);
+    });
+    this.time += this.dt * this.speed;
+    this.draw();
+  }
+
+  draw() {
+    const ctx = this.ctx;
+    const w = this.canvas.width, h = this.canvas.height;
+    ctx.fillStyle = '#0a0f1a'; ctx.fillRect(0,0,w,h);
+    
+    const showTypes = this.filter === 'all' ? null : this.filter;
+    this.neurons.forEach((n, i) => {
+      if (showTypes && n.type !== showTypes) return;
+      n.firingHistory.forEach(t => {
+        const x = (t / Math.max(this.time, 100)) * w * 0.9 + w * 0.05;
+        const y = (i / this.numNeurons) * h * 0.9 + h * 0.05;
+        ctx.fillStyle = n.color; ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI*2); ctx.fill();
+      });
+      const y = (i / this.numNeurons) * h * 0.9 + h * 0.05;
+      const vNorm = (n.v + 80) / 110;
+      const x = w * 0.95;
+      ctx.strokeStyle = n.color + '80'; ctx.beginPath(); ctx.moveTo(w*0.9, y); ctx.lineTo(x, y); ctx.stroke();
+    });
+    ctx.fillStyle = '#fff'; ctx.font = '14px Nunito'; ctx.fillText(`t=${this.time.toFixed(1)}ms  Speed: ${this.speed}x`, 10, 25);
+  }
+
+  start() { this.running = true; this.loop(); }
+  stop() { this.running = false; }
+  reset() { this.time = 0; this.neurons.forEach(n => {n.v=-65; n.u=n.b*-65; n.firingHistory=[];}); this.draw(); }
+  randomInput() { const currents = this.neurons.map(() => (Math.random()-0.5)*20); this.step(currents); }
+  setDt(dt) { this.dt = Math.max(0.01, Math.min(1, dt)); }
+  setSpeed(s) { this.speed = Math.max(0.1, Math.min(10, s)); }
+  setFilter(f) { this.filter = f; }
+  loop() {
+    if (!this.running) return;
+    this.step();
+    requestAnimationFrame(() => this.loop());
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GRAPH ALGORITHMS (Kids)
+// ─────────────────────────────────────────────────────────────────────────────
+class GraphAlgorithmVisualizerJS {
+  constructor() {
+    this.nodes = new Map();
+    this.adjList = new Map();
+    this.nodeLabels = new Map();
+    this.steps = [];
+    this.currentStep = 0;
+    this.dist = [];
+    this.canvas = document.getElementById('gaCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.positions = new Map();
+    this.createSampleGraph();
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+    this.draw();
+  }
+
+  createSampleGraph() {
+    const concepts = ['Perception','Attention','Working Memory','Long-Term Memory','Language','Reasoning','Decision Making','Problem Solving','Metacognition','Learning','Transfer','Expertise'];
+    concepts.forEach((c,i) => {
+      this.nodes.set(c, i);
+      this.adjList.set(i, []);
+      this.nodeLabels.set(i, c);
+    });
+    const edges = [
+      ['Perception','Attention',0.9], ['Attention','Working Memory',0.95],
+      ['Working Memory','Long-Term Memory',0.8], ['Working Memory','Language',0.7],
+      ['Working Memory','Reasoning',0.85], ['Working Memory','Decision Making',0.75],
+      ['Working Memory','Problem Solving',0.9], ['Long-Term Memory','Reasoning',0.7],
+      ['Long-Term Memory','Problem Solving',0.65], ['Language','Reasoning',0.6],
+      ['Reasoning','Decision Making',0.8], ['Problem Solving','Metacognition',0.7],
+      ['Metacognition','Learning',0.85], ['Learning','Transfer',0.75],
+      ['Transfer','Expertise',0.8], ['Expertise','Problem Solving',0.6]
+    ];
+    edges.forEach(([s,t,w]) => {
+      const si = this.nodes.get(s), ti = this.nodes.get(t);
+      this.adjList.get(si).push({to:ti, weight:w});
+      this.adjList.get(ti).push({to:si, weight:w});
+    });
+    this.updateSelects();
+  }
+
+  updateSelects() {
+    const sourceSel = document.getElementById('gaSourceSelect');
+    const targetSel = document.getElementById('gaTargetSelect');
+    const options = Array.from(this.nodes.keys()).map(k => `<option value="${k}">${k}</option>`).join('');
+    sourceSel.innerHTML = options;
+    targetSel.innerHTML = '<option value="">🌟 Find All Paths</option>' + options;
+  }
+
+  resize() {
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    this.canvas.width = rect.width;
+    this.canvas.height = 400;
+    this.computePositions();
+    this.draw();
+  }
+
+  computePositions() {
+    const w = this.canvas.width, h = this.canvas.height;
+    const rng = new SeededRandom(123);
+    this.nodes.forEach((idx, label) => {
+      this.positions.set(idx, {x: rng.nextFloat()*w*0.8+w*0.1, y: rng.nextFloat()*h*0.8+h*0.1});
+    });
+  }
+
+  runDijkstra(sourceLabel, targetLabel) {
+    const source = this.nodes.get(sourceLabel);
+    const target = targetLabel ? this.nodes.get(targetLabel) : -1;
+    if (source === undefined) return;
+
+    this.steps = [];
+    this.currentStep = 0;
+    const n = this.nodes.size;
+    this.dist = new Array(n).fill(Infinity);
+    const visited = new Array(n).fill(false);
+    this.dist[source] = 0;
+    const pq = [{dist:0, node:source}];
+
+    this.addStep(`🚀 Start at <strong>${sourceLabel}</strong> (distance = 0)`, [source], []);
+
+    while (pq.length) {
+      pq.sort((a,b)=>a.dist-b.dist);
+      const {dist, node:current} = pq.shift();
+      if (visited[current]) continue;
+      visited[current] = true;
+
+      const currentLabel = this.nodeLabels.get(current);
+      this.addStep(`📍 Visiting <strong>${currentLabel}</strong> (distance = ${dist.toFixed(1)})`, [current], []);
+
+      if (current === target) break;
+
+      for (const edge of this.adjList.get(current)) {
+        if (visited[edge.to]) continue;
+        const newDist = dist + edge.weight;
+        if (newDist < this.dist[edge.to]) {
+          this.dist[edge.to] = newDist;
+          pq.push({dist:newDist, node:edge.to});
+          const tgtLabel = this.nodeLabels.get(edge.to);
+          this.addStep(`🔗 Path: <strong>${currentLabel}</strong> → <strong>${tgtLabel}</strong> (new distance = ${newDist.toFixed(1)})`, [current, edge.to], [[current, edge.to]]);
+        }
+      }
+    }
+    this.draw();
+  }
+
+  addStep(desc, nodes, edges) {
+    this.steps.push({description: desc, highlightedNodes: nodes, highlightedEdges: edges, dist: [...this.dist]});
+  }
+
+  nextStep() {
+    if (this.currentStep < this.steps.length) {
+      this.currentStep++;
+      this.draw();
+    }
+  }
+
+  reset() { this.currentStep = 0; this.steps = []; this.draw(); }
+
+  draw() {
+    const ctx = this.ctx;
+    const w = this.canvas.width, h = this.canvas.height;
+    ctx.fillStyle = '#0a0f1a'; ctx.fillRect(0,0,w,h);
+
+    this.adjList.forEach((edges, src) => {
+      const p1 = this.positions.get(src);
+      edges.forEach(e => {
+        const p2 = this.positions.get(e.to);
+        if (!p1 || !p2) return;
+        const isHighlighted = this.steps[this.currentStep]?.highlightedEdges?.some(([a,b]) => (a===src && b===e.to) || (a===e.to && b===src));
+        ctx.strokeStyle = isHighlighted ? '#00d4aa' : '#1f2a44';
+        ctx.lineWidth = isHighlighted ? 4 : 2;
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        const mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+        ctx.fillStyle = '#8b9dc3'; ctx.font = '12px Nunito'; ctx.fillText(e.weight.toFixed(1), mx, my);
+      });
+    });
+
+    this.positions.forEach((pos, idx) => {
+      const label = this.nodeLabels.get(idx);
+      const isHighlighted = this.steps[this.currentStep]?.highlightedNodes?.includes(idx);
+      ctx.fillStyle = isHighlighted ? '#00d4aa' : '#111827';
+      ctx.strokeStyle = isHighlighted ? '#00d4aa' : '#1f2a44';
+      ctx.lineWidth = isHighlighted ? 4 : 2;
+      ctx.beginPath(); ctx.arc(pos.x, pos.y, 24, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 12px Nunito'; ctx.textAlign = 'center';
+      // Wrap long labels
+      const words = label.split(' ');
+      if (words.length > 1) {
+        ctx.fillText(words[0], pos.x, pos.y - 4);
+        ctx.fillText(words.slice(1).join(' '), pos.x, pos.y + 12);
+      } else {
+        ctx.fillText(label, pos.x, pos.y + 4);
+      }
+    });
+    this.updateStepsPanel();
+  }
+
+  updateStepsPanel() {
+    const container = document.getElementById('gaStepsKids');
+    if (!container) return;
+    container.innerHTML = this.steps.map((step, i) => `
+      <div style="padding:0.75rem; background:${i===this.currentStep?'rgba(0,212,170,0.1)':'#f8fafc'}; border-radius:10px; border:2px solid ${i===this.currentStep?'#22c55e':'#e5e7eb'};">
+        <div style="font-size:0.9rem;">${i+1}. ${step.description}</div>
+      </div>
+    `).join('');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// COGNITIVE LOAD (Kids)
+// ─────────────────────────────────────────────────────────────────────────────
+class CognitiveLoadSimulatorJS {
+  constructor() {
+    this.workingMemoryCapacity = 4;
+    this.currentLoad = 0;
+    this.intrinsicLoad = 0;
+    this.extraneousLoad = 0;
+    this.germaneLoad = 0;
+    this.schemaCount = 0;
+    this.automationLevel = 0;
+    this.timePressure = 0;
+    this.canvas = document.getElementById('clCanvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+    this.draw();
+  }
+
+  resize() {
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    this.canvas.width = rect.width;
+    this.canvas.height = 400;
+  }
+
+  simulateTask(elementCount, elementInteractivity, instructionalQuality, learnerExpertise) {
+    this.intrinsicLoad = elementCount * elementInteractivity / (1 + learnerExpertise * 3);
+    this.extraneousLoad = (1 - instructionalQuality) * 2;
+    const cap = this.workingMemoryCapacity;
+    this.germaneLoad = Math.max(cap - this.intrinsicLoad - this.extraneousLoad, 0);
+    if (this.timePressure > 0.5) {
+      const mult = 1 + this.timePressure;
+      this.intrinsicLoad *= mult;
+      this.extraneousLoad *= mult;
+    }
+    this.currentLoad = this.intrinsicLoad + this.extraneousLoad + this.germaneLoad;
+    if (this.germaneLoad > 1) {
+      this.schemaCount++;
+      this.automationLevel = Math.min(this.schemaCount * 0.1, 0.8);
+    }
+    this.updateUI();
+    this.draw();
+    return this.getResults();
+  }
+
+  setRush(p) { this.timePressure = Math.max(0, Math.min(1, p)); this.draw(); }
+
+  getResults() {
+    const cap = this.workingMemoryCapacity;
+    const recs = [];
+    if (this.intrinsicLoad > cap * 0.6) recs.push('🧩 Break the task into smaller pieces!');
+    if (this.extraneousLoad > cap * 0.3) recs.push('📚 Ask for clearer instructions or examples!');
+    if (this.germaneLoad < 0.5) recs.push('🌱 Try explaining it in your own words or draw a picture!');
+    if (this.currentLoad > cap) recs.push('⚠️ BRAIN OVERLOAD! Take a break, then simplify!');
+    return {intrinsic:this.intrinsicLoad, extraneous:this.extraneousLoad, germane:this.germaneLoad, total:this.currentLoad, capacity:cap, overloaded:this.currentLoad>cap, schemaCount:this.schemaCount, automation:this.automationLevel, recommendations:recs};
+  }
+
+  updateUI() {
+    document.getElementById('clIntrinsicVal').textContent = this.intrinsicLoad.toFixed(1);
+    document.getElementById('clExtraneousVal').textContent = this.extraneousLoad.toFixed(1);
+    document.getElementById('clGermaneVal').textContent = this.germaneLoad.toFixed(1);
+    document.getElementById('clTotalVal').textContent = this.currentLoad.toFixed(1);
+    document.getElementById('clTotalVal').style.color = this.currentLoad > this.workingMemoryCapacity ? '#ef4444' : '#166534';
+    document.getElementById('clTotalCard').classList.toggle('warning', this.currentLoad > this.workingMemoryCapacity);
+    document.getElementById('clSchemas').textContent = this.schemaCount;
+    document.getElementById('clAuto').textContent = Math.round(this.automationLevel * 100) + '%';
+    
+    const results = this.getResults();
+    const tipsContainer = document.getElementById('clTips');
+    if (results.recommendations.length === 0) {
+      tipsContainer.innerHTML = '<div class="tip success">🎉 Perfect balance! Your brain power is optimized!</div>';
+    } else {
+      tipsContainer.innerHTML = results.recommendations.map(r => `<div class="tip ${r.includes('OVERLOAD')?'warning':''}">${r}</div>`).join('');
+    }
+  }
+
+  draw() {
+    const ctx = this.ctx;
+    const w = this.canvas.width, h = this.canvas.height;
+    ctx.fillStyle = '#f8fafc'; ctx.fillRect(0,0,w,h);
+    
+    const loads = [
+      {label:'🧩 Intrinsic', val:this.intrinsicLoad, color:'#3b82f6', max:this.workingMemoryCapacity},
+      {label:'😵 Extraneous', val:this.extraneousLoad, color:'#f97316', max:this.workingMemoryCapacity},
+      {label:'🌱 Germane', val:this.germaneLoad, color:'#22c55e', max:this.workingMemoryCapacity},
+      {label:'⚡ Total', val:this.currentLoad, color:this.currentLoad>this.workingMemoryCapacity?'#ef4444':'#166534', max:this.workingMemoryCapacity}
+    ];
+    const barH = 70, gap = 20, startY = 40;
+    loads.forEach((l, i) => {
+      const y = startY + i * (barH + gap);
+      ctx.fillStyle = '#e5e7eb'; ctx.fillRect(80, y, w-160, barH, 12);
+      const barW = Math.min(l.val / l.max, 1) * (w-160);
+      const grad = ctx.createLinearGradient(80, y, 80+barW, y);
+      grad.addColorStop(0, l.color + '40'); grad.addColorStop(1, l.color);
+      ctx.fillStyle = grad; ctx.fillRect(80, y, barW, barH, 12);
+      ctx.fillStyle = '#166534'; ctx.font = 'bold 16px Nunito'; ctx.textAlign = 'left';
+      ctx.fillText(`${l.label}: ${l.val.toFixed(1)} / ${l.max}`, 90, y + barH/2 + 6);
+    });
+    const capX = 80 + (this.workingMemoryCapacity/this.workingMemoryCapacity)*(w-160);
+    ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.setLineDash([8,8]);
+    ctx.beginPath(); ctx.moveTo(capX, startY); ctx.lineTo(capX, startY + loads.length*(barH+gap)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#ef4444'; ctx.font = '12px Nunito'; ctx.fillText('Capacity Limit', capX+5, startY+15);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// KIDS MODULE HANDLERS
+// ─────────────────────────────────────────────────────────────────────────────
+function snActivateKids(conceptId, power = 1.0) {
+  if (!snInstance) return;
+  const result = snInstance.activate(conceptId, power);
+  drawSemanticNetworkKids();
+  updateScaffoldUI();
+  checkBadge('first-spark');
+  if (Object.values(snInstance.activation).filter(v => v > 0.1).length >= 5) checkBadge('web-weaver');
+}
+
+function snAdvanceScaffoldKids() {
+  if (!snInstance) return;
+  snInstance.advanceScaffold();
+  updateScaffoldUI();
+  if (snInstance.scaffold.level >= 3) checkBadge('brain-architect-sn');
+}
+
+function updateScaffoldUI() {
+  if (!snInstance) return;
+  const s = snInstance.getScaffold();
+  document.getElementById('snGuidance').textContent = s.guidance;
+  const qContainer = document.getElementById('snKidsQuestions');
+  qContainer.innerHTML = s.checkQuestions.map((q, i) => `
+    <div style="padding:1rem; background:#fff; border-radius:12px; border:2px solid #e5e7eb; margin-bottom:0.75rem;">
+      <div style="font-weight:700; margin-bottom:0.75rem; color:#166534;">${q.question}</div>
+      ${q.answerType === 'MultipleChoice' ? `
+        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+          ${q.options.map((opt, oi) => `<button class="check-q-option" onclick="selectSnKidsOption(${i}, ${oi}, this, '${q.correctAnswer}')" style="padding:0.75rem; background:#f0fdf4; border:2px solid #e5e7eb; border-radius:8px; cursor:pointer; font-family:inherit; text-align:left; transition:all 0.2s;">${opt}</button>`).join('')}
+        </div>
+      ` : `
+        <input type="text" class="control-input" placeholder="Type your answer..." style="width:100%; margin-top:0.5rem;" onblur="checkSnKidsFreeText(${i}, this, '${q.correctAnswer}')">
+      `}
+      <div class="check-q-explanation" id="snKidsExplanation${i}" style="margin-top:0.75rem; padding:0.75rem; background:#f0fdf4; border-radius:8px; font-size:0.9rem; color:#166534; display:none;"></div>
+    </div>
+  `).join('');
+}
+
+function selectSnKidsOption(qIdx, optIdx, btn, correct) {
+  const correctAns = optIdx === 0; // Simplified - first option is correct in our data
+  btn.style.borderColor = correctAns ? '#22c55e' : '#ef4444';
+  btn.style.background = correctAns ? '#dcfce7' : '#fef2f2';
+  document.getElementById('snKidsExplanation' + qIdx).textContent = snInstance.getScaffold().checkQuestions[qIdx].explanation;
+  document.getElementById('snKidsExplanation' + qIdx).style.display = 'block';
+  btn.disabled = true;
+  document.querySelectorAll(`#snKidsExplanation${qIdx} ~ .check-q-option`).forEach(b => b.disabled = true);
+  if (correctAns) { speak('Correct! Great thinking!'); checkBadge('web-weaver'); }
+  else speak('Not quite, but great try!');
+}
+
+function checkSnKidsFreeText(qIdx, input, correct) {
+  const scaffold = snInstance.getScaffold();
+  const q = scaffold.checkQuestions[qIdx];
+  const userAns = input.value.toLowerCase();
+  const correctAns = q.correctAnswer.toLowerCase();
+  const match = correctAns.split(' ').some(word => word.length > 3 && userAns.includes(word));
+  input.style.borderColor = match ? '#22c55e' : '#ef4444';
+  document.getElementById('snKidsExplanation' + qIdx).textContent = q.explanation;
+  document.getElementById('snKidsExplanation' + qIdx).style.display = 'block';
+  if (match) { speak('Correct! Amazing thinking!'); }
+}
+
+function drawSemanticNetworkKids() {
+  if (!snInstance) return;
+  const canvas = document.getElementById('snCanvas');
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width; canvas.height = 400;
+  
+  const data = snInstance.getGraphData();
+  const w = canvas.width, h = canvas.height;
+  
+  ctx.fillStyle = '#f8fafc'; ctx.fillRect(0,0,w,h);
+  
+  data.edges.forEach(e => {
+    const n1 = data.nodes.find(n => n.id === e.source);
+    const n2 = data.nodes.find(n => n.id === e.target);
+    if (!n1 || !n2) return;
+    ctx.strokeStyle = '#dcfce7'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(n1.x + w/2, n1.y + h/2); ctx.lineTo(n2.x + w/2, n2.y + h/2); ctx.stroke();
+  });
+  
+  data.nodes.forEach(n => {
+    const act = n.activation;
+    const radius = 20 + act * 25;
+    const hue = 120 + act * 60;
+    ctx.fillStyle = `hsl(${hue}, 70%, ${40 + act * 30}%)`;
+    ctx.beginPath(); ctx.arc(n.x + w/2, n.y + h/2, radius, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Nunito'; ctx.textAlign = 'center';
+    const words = n.label.split(' ');
+    if (words.length > 1) {
+      ctx.fillText(words[0], n.x + w/2, n.y + h/2 - 4);
+      ctx.fillText(words.slice(1).join(' '), n.x + w/2, n.y + h/2 + 16);
+    } else {
+      ctx.fillText(n.label, n.x + w/2, n.y + h/2 + 5);
+    }
+    ctx.fillStyle = '#22c55e'; ctx.font = 'bold 11px Nunito';
+    ctx.fillText(Math.round(act*100)+'%', n.x + w/2, n.y + h/2 - radius - 8);
+  });
+}
+
+// Neural Dynamics Kids
+function ndStartKids() { if (ndInstance) ndInstance.start(); }
+function ndStopKids() { if (ndInstance) ndInstance.stop(); }
+function ndResetKids() { if (ndInstance) ndInstance.reset(); }
+function ndRandomInputKids() { if (ndInstance) ndInstance.randomInput(); }
+
+// Graph Kids
+function gaRunDijkstraKids() {
+  const source = document.getElementById('gaSourceSelect').value;
+  const target = document.getElementById('gaTargetSelect').value || null;
+  if (gavInstance && source) {
+    gavInstance.runDijkstra(source, target);
+    checkBadge('first-step');
+  }
+}
+function gaNextStepKids() { if (gavInstance) gavInstance.nextStep(); }
+function gaResetKids() { if (gavInstance) gavInstance.reset(); }
+function gaRunTarjanKids() { speak('Tarjan SCC coming soon in the full version!'); }
+
+// Cognitive Load Kids
+function clSimulateKids() {
+  if (!clsInstance) return;
+  const ec = parseInt(document.getElementById('clPieces').value);
+  const ei = parseInt(document.getElementById('clConnect').value) / 100;
+  const iq = parseInt(document.getElementById('clExplain').value) / 100;
+  const le = parseInt(document.getElementById('clSkill').value) / 100;
+  clsInstance.simulateTask(ec, ei, iq, le);
+  checkBadge('first-measure');
+  if (clsInstance.currentLoad <= clsInstance.workingMemoryCapacity) checkBadge('balance-master');
+  if (clsInstance.schemaCount >= 10) checkBadge('schema-builder');
+}
+function clResetKids() { if (clsInstance) { clsInstance.schemaCount = 0; clsInstance.automationLevel = 0; clsInstance.timePressure = 0; clsInstance.currentLoad = clsInstance.intrinsicLoad = clsInstance.extraneousLoad = clsInstance.germaneLoad = 0; clsInstance.updateUI(); clsInstance.draw(); } }
+function clRandomTask() {
+  document.getElementById('clPieces').value = Math.floor(Math.random()*15)+1;
+  document.getElementById('clConnect').value = Math.floor(Math.random()*100);
+  document.getElementById('clExplain').value = Math.floor(Math.random()*100);
+  document.getElementById('clSkill').value = Math.floor(Math.random()*100);
+  document.getElementById('clRush').value = Math.floor(Math.random()*50);
+  document.querySelectorAll('[id$="Value"]').forEach(el => {
+    const slider = document.getElementById(el.id.replace('Value', ''));
+    if (slider) el.textContent = slider.value + (el.id.includes('Pieces') ? '' : '%');
+  });
+  clSimulateKids();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GAMIFICATION & PROGRESS
+// ─────────────────────────────────────────────────────────────────────────────
+function checkBadge(badgeKey) {
+  if (badgeData[badgeKey] && !badgeData[badgeKey].earned) {
+    badgeData[badgeKey].earned = true;
+    saveProgress();
+    renderBadges();
+    renderProgressBadges();
+    showBadgeEarned(badgeKey);
+  }
+}
+
+function showBadgeEarned(badgeKey) {
+  const badge = badgeData[badgeKey];
+  const toast = document.createElement('div');
+  toast.style.cssText = `position:fixed; bottom:2rem; right:2rem; z-index:1000; background:#22c55e; color:#fff; padding:1.5rem 2rem; border-radius:16px; box-shadow:0 8px 32px rgba(34,197,94,0.4); display:flex; align-items:center; gap:1rem; font-family:Nunito; animation:slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1);`;
+  toast.innerHTML = `<span style="font-size:2.5rem;">${badge.icon}</span><div><strong style="font-size:1.2rem;">Badge Earned!</strong><br>${badge.name}<br><small>${badge.desc}</small></div>`;
+  document.body.appendChild(toast);
+  speak(`Badge earned: ${badge.name}!`);
+  setTimeout(() => { toast.style.animation = 'slideUp 0.3s reverse'; setTimeout(() => toast.remove(), 300); }, 4000);
+}
+
+function renderBadges() {
+  const container = document.querySelector('.hero .badges-row') || document.querySelector('.progress-section .badges-row');
+  // Badges rendered in HTML, update classes
+  Object.entries(badgeData).forEach(([key, badge]) => {
+    const el = document.querySelector(`.badge[title*="${badge.desc.split(' ').slice(0,3).join(' ')}"]`);
+    if (el) {
+      el.classList.toggle('earned', badge.earned);
+      el.classList.toggle('locked', !badge.earned);
+    }
+  });
+  document.getElementById('badgeCount').textContent = Object.values(badgeData).filter(b => b.earned).length;
+}
+
+function renderProgressBadges() {
+  const container = document.getElementById('allBadges');
+  if (!container) return;
+  container.innerHTML = Object.entries(badgeData).map(([key, badge]) => `
+    <div class="badge ${badge.earned ? 'earned' : 'locked'}" title="${badge.desc}" onclick="showBadgeDetail('${key}')">
+      <span class="badge-icon">${badge.icon}</span>
+      <span class="badge-name">${badge.name}</span>
+    </div>
+  `).join('');
+}
+
+function showBadgeDetail(key) {
+  const badge = badgeData[key];
+  document.getElementById('badgeModalContent').innerHTML = `
+    <div style="text-align:center; padding:1rem;">
+      <div style="font-size:4rem; margin-bottom:1rem;">${badge.icon}</div>
+      <h3 style="color:#166534; margin-bottom:0.5rem;">${badge.name}</h3>
+      <p style="color:#374151; margin-bottom:1rem;">${badge.desc}</p>
+      <div style="padding:1rem; background:${badge.earned?'#dcfce7':'#fef2f2'}; border-radius:12px; color:${badge.earned?'#166534':'#991b1b'};">
+        ${badge.earned ? '🎉 EARNED!' : '🔒 LOCKED - Keep exploring!'}
+      </div>
+      <p style="font-size:0.85rem; color:#6b7280; margin-top:1rem;">Module: ${badge.module}</p>
+    </div>
+  `;
+  openModal('badgeModal');
+}
+
+function renderProgressView() {
+  document.getElementById('progModules').textContent = new Set(Object.values(badgeData).filter(b => b.earned).map(b => b.module)).size;
+  document.getElementById('progBadges').textContent = Object.values(badgeData).filter(b => b.earned).length;
+  document.getElementById('progTime').textContent = Math.round(Object.values(badgeData).filter(b => b.earned).length * 12) + ' min';
+  renderProgressBadges();
+  
+  const goals = document.getElementById('nextGoals');
+  const unearned = Object.entries(badgeData).filter(([k,b]) => !b.earned).slice(0,3);
+  goals.innerHTML = unearned.map(([k,b]) => `
+    <div class="check-q" style="background:#fff; border:2px solid #e5e7eb; border-radius:10px; padding:1rem;">
+      <div style="font-weight:700; display:flex; align-items:center; gap:0.5rem;">${b.icon} ${b.name}</div>
+      <div style="color:#6b7280; font-size:0.9rem; margin-top:0.5rem;">${b.desc}</div>
+    </div>
+  `).join('');
+}
+
+function updateHeroStats() {
+  const earned = Object.values(badgeData).filter(b => b.earned).length;
+  document.getElementById('totalXP').textContent = (earned * 125 + 500).toLocaleString();
+  document.getElementById('modulesDone').textContent = new Set(Object.values(badgeData).filter(b => b.earned).map(b => b.module)).size;
+  document.getElementById('xpFill').style.width = Math.min(100, (earned / 16) * 100) + '%';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACCESSIBILITY
+// ─────────────────────────────────────────────────────────────────────────────
+let speechEnabled = false;
+const synth = window.speechSynthesis;
+
+function speak(text) {
+  if (!speechEnabled) return;
+  if (synth.speaking) synth.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.rate = 0.9;
+  utter.pitch = 1.1;
+  utter.voice = synth.getVoices().find(v => v.name.includes('Google') || v.name.includes('Microsoft')) || null;
+  synth.speak(utter);
+}
+
+function initAccessibility() {
+  document.getElementById('btnLargeText').addEventListener('click', () => {
+    document.documentElement.classList.toggle('large-text');
+    document.getElementById('btnLargeText').classList.toggle('active');
+    document.getElementById('btnLargeText').setAttribute('aria-pressed', document.documentElement.classList.contains('large-text'));
+  });
+  document.getElementById('btnHighContrast').addEventListener('click', () => {
+    document.body.style.filter = document.body.style.filter === 'contrast(150%)' ? '' : 'contrast(150%)';
+    document.getElementById('btnHighContrast').classList.toggle('active');
+    document.getElementById('btnHighContrast').setAttribute('aria-pressed', document.body.style.filter === 'contrast(150%)');
+  });
+  document.getElementById('btnReduceMotion').addEventListener('click', () => {
+    document.documentElement.style.setProperty('--animation-duration', document.documentElement.style.getPropertyValue('--animation-duration') === '0.01ms' ? '' : '0.01ms');
+    document.getElementById('btnReduceMotion').classList.toggle('active');
+    document.getElementById('btnReduceMotion').setAttribute('aria-pressed', document.documentElement.style.getPropertyValue('--animation-duration') === '0.01ms');
+  });
+  document.getElementById('btnReadAloud').addEventListener('click', () => {
+    speechEnabled = !speechEnabled;
+    document.getElementById('btnReadAloud').classList.toggle('active');
+    document.getElementById('btnReadAloud').setAttribute('aria-pressed', speechEnabled);
+    if (speechEnabled) speak('Read aloud enabled. I will speak important messages.');
+    else { if (synth.speaking) synth.cancel(); }
+  });
+  
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(overlay.id); });
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+    }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SLIDERS
+// ─────────────────────────────────────────────────────────────────────────────
+function setupSliders() {
+  document.querySelectorAll('.big-slider[type="range"]').forEach(slider => {
+    const valueEl = document.getElementById(slider.id + 'Value');
+    if (valueEl) {
+      slider.addEventListener('input', () => {
+        valueEl.textContent = slider.value + (slider.id.includes('Pieces') ? '' : slider.id.includes('Rush') || slider.id.includes('Connect') || slider.id.includes('Explain') || slider.id.includes('Skill') || slider.id.includes('Rush') || slider.id.includes('Interactivity') || slider.id.includes('Quality') || slider.id.includes('Expertise') ? '%' : '');
+      });
+    }
+  });
+}
+</script>
+</body>
+</html>
