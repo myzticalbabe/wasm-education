@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"math"
 	"math/rand"
+	"strconv"
 	"syscall/js"
 	"time"
 )
@@ -289,10 +290,6 @@ func (sn *SemanticNetwork) AdvanceScaffold(this js.Value, args []js.Value) inter
 
 // GetGraphData returns network structure for visualization
 func (sn *SemanticNetwork) GetGraphData(this js.Value, args []js.Value) interface{} {
-	type GraphData struct {
-		Nodes []NodeData `json:"nodes"`
-		Edges []EdgeData `json:"edges"`
-	}
 	type NodeData struct {
 		ID             string   `json:"id"`
 		Label          string   `json:"label"`
@@ -307,6 +304,10 @@ func (sn *SemanticNetwork) GetGraphData(this js.Value, args []js.Value) interfac
 		Target   string  `json:"target"`
 		Relation string  `json:"relation"`
 		Strength float32 `json:"strength"`
+	}
+	type GraphData struct {
+		Nodes []NodeData `json:"nodes"`
+		Edges []EdgeData `json:"edges"`
 	}
 
 	nodes := make([]NodeData, 0, len(sn.nodes))
@@ -432,7 +433,7 @@ func (nd *NeuralDynamics) initializeNetwork(numNeurons int) {
 			NeuronType: ntype, FiringHistory: []float32{},
 		}
 		nd.labels[i] = SemanticLabel{
-			Text:               string(ntype) + " Neuron #" + string(rune('0'+i%10)),
+			Text:               string(ntype)+ " Neuron #" + strconv.Itoa(i),
 			ConceptType:        "Visualization",
 			Difficulty:         "Advanced",
 			Prerequisites:      []string{"izhikevich_model", "membrane_potential"},
@@ -700,7 +701,7 @@ func (gav *GraphAlgorithmVisualizer) RunDijkstra(this js.Value, args []js.Value)
 		}
 
 		gav.stepHistory = append(gav.stepHistory, AlgorithmStep{
-			Description:      "Visit '" + currentLabel + "' (distance = " + string(rune('0'+int(current.dist*100)%10)) + ")",
+			Description:      "Visit '" + currentLabel + "' (distance = " + strconv.FormatFloat(float64(current.dist), 'f', 2, 32) + ")",
 			HighlightedNodes: []int{current.node},
 			HighlightedEdges: [][2]int{},
 			DataSnapshot:     gav.snapshotDistances(dist, visited),
@@ -727,7 +728,7 @@ func (gav *GraphAlgorithmVisualizer) RunDijkstra(this js.Value, args []js.Value)
 				}
 
 				gav.stepHistory = append(gav.stepHistory, AlgorithmStep{
-					Description: "Relax edge " + srcLabel + " → " + tgtLabel + ": new distance = " + string(rune('0'+int(newDist*100)%10)),
+					Description: "Relax edge " + srcLabel + " → " + tgtLabel + ": new distance = " + strconv.FormatFloat(float64(newDist), 'f', 2, 32),
 					HighlightedNodes: []int{current.node, edge.To},
 					HighlightedEdges: [][2]int{{current.node, edge.To}},
 					DataSnapshot: gav.snapshotDistances(dist, visited),
@@ -769,10 +770,6 @@ func (gav *GraphAlgorithmVisualizer) Reset(this js.Value, args []js.Value) inter
 
 // GetGraphData returns graph for visualization
 func (gav *GraphAlgorithmVisualizer) GetGraphData(this js.Value, args []js.Value) interface{} {
-	type GraphData struct {
-		Nodes []NodeData `json:"nodes"`
-		Edges []EdgeData `json:"edges"`
-	}
 	type NodeData struct {
 		ID    string  `json:"id"`
 		Label string  `json:"label"`
@@ -784,11 +781,15 @@ func (gav *GraphAlgorithmVisualizer) GetGraphData(this js.Value, args []js.Value
 		Target  string  `json:"target"`
 		Weight  float32 `json:"weight"`
 	}
+	type GraphData struct {
+		Nodes []NodeData `json:"nodes"`
+		Edges []EdgeData `json:"edges"`
+	}
 
 	nodes := make([]NodeData, 0, len(gav.nodes))
 	for label, idx := range gav.nodes {
 		nodes = append(nodes, NodeData{
-			ID:    string(rune('0' + idx%10)),
+			ID:    strconv.Itoa(idx),
 			Label: label,
 			X:     gav.rng.Float32()*800 - 400,
 			Y:     gav.rng.Float32()*600 - 300,
@@ -1037,7 +1038,11 @@ func registerCallbacks() {
 }
 
 func main() {
-	// This is required for TinyGo WASM
-	// The actual entry is via the registered callbacks
+	// Register the JS API before blocking forever. Without this call the
+	// module builds but exports nothing.
+	registerCallbacks()
+
+	// TinyGo WASM needs main to stay alive; the API is driven by the
+	// registered callbacks above.
 	select {}
 }

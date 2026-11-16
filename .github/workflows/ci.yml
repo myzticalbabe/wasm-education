@@ -20,12 +20,20 @@ jobs:
         run: |
           cd rust-wasm
           wasm-pack build --target web --out-dir pkg
+      - name: Install Go (version supported by TinyGo)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
       - name: Install TinyGo
         run: |
-          TINYGO_VERSION=0.31.0
+          TINYGO_VERSION=0.44.0
           curl -fsSL -o tinygo.tar.gz "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
           sudo tar -C /usr/local -xzf tinygo.tar.gz
           echo "/usr/local/tinygo/bin" >> "$GITHUB_PATH"
+      - name: Show toolchain versions
+        run: |
+          go version
+          tinygo version
       - name: Build Go WASM
         run: |
           cd go-wasm
