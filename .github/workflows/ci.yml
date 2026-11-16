@@ -48,3 +48,22 @@ jobs:
       - name: Check licenses
         run: |
           test -f LICENSE && echo "LICENSE present" || exit 1
+
+  ci:
+    name: ci
+    needs: [test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Aggregate required jobs
+        env:
+          RESULTS: ${{ join(needs.*.result, ',') }}
+        run: |
+          echo "job results: $RESULTS"
+          case ",$RESULTS," in
+            *,failure,*|*,cancelled,*)
+              echo "a required job did not succeed"
+              exit 1
+              ;;
+          esac
+          echo "all required jobs succeeded"
