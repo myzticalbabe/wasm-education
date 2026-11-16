@@ -1,6 +1,6 @@
 // Package wasm_education provides educational WASM modules for cognitive/semantic learning
 // Built with TinyGo for WebAssembly targeting browser environments
-package wasm_education
+package main
 
 import (
 	"encoding/json"
