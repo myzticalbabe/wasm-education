@@ -163,7 +163,7 @@
           </div>
         </div>
         <div class="canvas-wrapper">
-          <canvas id="snCanvas"></canvas>
+          <canvas id="snCanvas" role="img" aria-label="Semantic network graph - activate concepts to watch spreading activation">A graph of concepts linked by association. Your browser cannot draw it here. Use the buttons below: each one performs the same activation the graph shows.</canvas>
           <div class="canvas-toolbar">
             <button class="toolbar-btn" onclick="snActivate('working_memory')">Activate Working Memory</button>
             <button class="toolbar-btn" onclick="snActivate('attention')">Activate Attention</button>
@@ -227,7 +227,7 @@
           </div>
         </div>
         <div class="canvas-wrapper">
-          <canvas id="ndCanvas"></canvas>
+          <canvas id="ndCanvas" role="img" aria-label="Neuron spike raster - firing patterns of simulated neurons over time">A raster plot of neuron spikes over time. Your browser cannot draw it here. Use the controls below to run the simulation.</canvas>
           <div class="canvas-toolbar">
             <button class="toolbar-btn primary" onclick="ndStart()">Start Simulation</button>
             <button class="toolbar-btn" onclick="ndStop()">Stop</button>
@@ -283,7 +283,7 @@
           </div>
         </div>
         <div class="canvas-wrapper">
-          <canvas id="gaCanvas"></canvas>
+          <canvas id="gaCanvas" role="img" aria-label="Cognitive architecture graph - graph algorithm execution steps">A graph of cognitive modules with weighted edges. Your browser cannot draw it here. Use the buttons below to step through the algorithm.</canvas>
           <div class="canvas-toolbar">
             <button class="toolbar-btn primary" onclick="gaRunDijkstra()">Run Dijkstra</button>
             <button class="toolbar-btn" onclick="gaNextStep()">Next Step</button>
@@ -326,7 +326,7 @@
           </div>
         </div>
         <div class="canvas-wrapper">
-          <canvas id="clCanvas"></canvas>
+          <canvas id="clCanvas" role="img" aria-label="Cognitive load meters - intrinsic, extraneous and germane load over time">Three meters showing cognitive load over time. Your browser cannot draw it here. Use the sliders below to change the parameters.</canvas>
           <div class="canvas-toolbar">
             <button class="toolbar-btn primary" onclick="clSimulate()">Simulate Task</button>
             <button class="toolbar-btn" onclick="clReset()">Reset</button>

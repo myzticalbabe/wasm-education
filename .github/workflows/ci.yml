@@ -30,6 +30,10 @@ jobs:
       - name: Verify demo page
         run: |
           ls -la demo-pages/index.html
+
+      - name: Check page structure and local assets
+        run: |
+          python tools/check_pages.py
       - name: Check licenses
         run: |
           test -f LICENSE && echo "LICENSE present" || exit 1
