@@ -16,25 +16,19 @@ name = "wasm_education"
 wasm-bindgen = { version = "0.2", features = ["serde-serialize"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde-wasm-bindgen = "0.6"
 web-sys = { version = "0.3", features = [
     "Document", "Element", "HtmlElement", "CanvasRenderingContext2d",
-    "Window", "Console", "EventTarget", "MouseEvent", "KeyboardEvent",
-    "HtmlCanvasElement", "RequestAnimationFrame"
+    "Window", "console", "EventTarget", "MouseEvent", "KeyboardEvent",
+    "HtmlCanvasElement"
 ] }
-js-sys = "0.3"
-rand = { version = "0.8", features = ["wasm-bindgen", "std"] }
+rand = { version = "0.8", features = ["std", "std_rng"] }
+# `rand` pulls entropy from getrandom; on wasm32 that needs the `js` backend.
+getrandom = { version = "0.2", features = ["js"] }
 nalgebra = { version = "0.32", features = ["serde-serialize"] }
-petgraph = { version = "0.6", features = ["serde", "stable_graph"] }
-fixedbitset = "0.4"
-rayon = { version = "1.10", features = ["wasm-bindgen"] }
-lol_html = "0.6"
-pulldown-cmark = { version = "0.10", features = ["simd"] }
-katex = "0.4"
-web-time = "1.0"
-
-[dependencies.wasm-bindgen-test]
-version = "0.3"
-optional = true
+petgraph = { version = "0.6", features = ["serde-1", "stable_graph"] }
+fixedbitset = "0.5"
+console_error_panic_hook = { version = "0.1", optional = true }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
@@ -47,5 +41,4 @@ panic = "abort"
 
 [features]
 default = ["console_error_panic_hook"]
-console_error_panic_hook = ["wasm-bindgen/console_error_panic_hook"]
-wee_alloc = ["wasm-bindgen/wee_alloc"]
+console_error_panic_hook = ["dep:console_error_panic_hook"]
