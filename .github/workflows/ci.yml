@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12', cache: 'pip' }
+        with: { python-version: '3.12' }
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with: { targets: wasm32-unknown-unknown }
@@ -20,9 +20,20 @@ jobs:
         run: |
           cd rust-wasm
           wasm-pack build --target web --out-dir pkg
+      - name: Install Go (version supported by TinyGo)
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.x'
       - name: Install TinyGo
-        uses: tinygo-org/tinygo-action@v1
-        with: { tinygo-version: '0.31.0' }
+        run: |
+          TINYGO_VERSION=0.44.0
+          curl -fsSL -o tinygo.tar.gz "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
+          sudo tar -C /usr/local -xzf tinygo.tar.gz
+          echo "/usr/local/tinygo/bin" >> "$GITHUB_PATH"
+      - name: Show toolchain versions
+        run: |
+          go version
+          tinygo version
       - name: Build Go WASM
         run: |
           cd go-wasm
@@ -30,6 +41,29 @@ jobs:
       - name: Verify demo page
         run: |
           ls -la demo-pages/index.html
+
+      - name: Check page structure and local assets
+        run: |
+          python tools/check_pages.py
       - name: Check licenses
         run: |
           test -f LICENSE && echo "LICENSE present" || exit 1
+
+  ci:
+    name: ci
+    needs: [test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Aggregate required jobs
+        env:
+          RESULTS: ${{ join(needs.*.result, ',') }}
+        run: |
+          echo "job results: $RESULTS"
+          case ",$RESULTS," in
+            *,failure,*|*,cancelled,*)
+              echo "a required job did not succeed"
+              exit 1
+              ;;
+          esac
+          echo "all required jobs succeeded"

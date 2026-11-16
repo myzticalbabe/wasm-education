@@ -1,0 +1,21 @@
+# Rust / wasm-pack build output
+rust-wasm/target/
+go-wasm/main.wasm
+pkg/
+*.wasm.br
+*.wasm.gz
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -11,12 +11,10 @@
 
 use wasm_bindgen::prelude::*;
 use serde::{Serialize, Deserialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use rand::prelude::*;
-use web_sys::{console, CanvasRenderingContext2d, HtmlCanvasElement};
-use nalgebra::{DVector, DMatrix};
+use web_sys::console;
 use petgraph::graph::{NodeIndex, UnGraph};
-use petgraph::algo::{connected_components, dijkstra, tarjan_scc};
 use petgraph::visit::EdgeRef;
 use fixedbitset::FixedBitSet;
 
@@ -125,6 +123,9 @@ enum NodeType {
     Relation,
     Property,
     Process,
+    Theorem,
+    Algorithm,
+    MetaCognition,
 }
 
 #[derive(Clone, Debug)]
@@ -174,7 +175,7 @@ impl SemanticNetwork {
             let idx = self.graph.add_node(SemanticNode {
                 id: id.to_string(),
                 concept: concept.to_string(),
-                node_type,
+                node_type: node_type.clone(),
                 weight: 1.0,
             });
             node_indices.insert(id, idx);
@@ -301,7 +302,14 @@ impl SemanticNetwork {
                 self.scaffold.guidance = "Explore Spreading Activation — how concepts prime each other through semantic links.".to_string();
                 self.scaffold.check_questions.push(CheckQuestion {
                     question: "How does semantic priming demonstrate spreading activation?".to_string(),
-                    answer_type: AnswerType::MultipleChoice { options: vec!["Faster recognition of related words", "Slower recognition of unrelated words", "No effect on recognition", "Only affects visual processing"].to_string() },
+                    answer_type: AnswerType::MultipleChoice {
+                        options: vec![
+                            "Faster recognition of related words".to_string(),
+                            "Slower recognition of unrelated words".to_string(),
+                            "No effect on recognition".to_string(),
+                            "Only affects visual processing".to_string(),
+                        ],
+                    },
                     correct_answer: "Faster recognition of related words".to_string(),
                     explanation: "Priming activates related concepts, reducing retrieval time for semantically linked items.".to_string(),
                     concept_tested: "semantic_priming".to_string(),
@@ -480,7 +488,7 @@ impl NeuralDynamics {
 
         let mut rng = StdRng::from_entropy();
         for i in 0..num_neurons {
-            let ntype = types[i % types.len()];
+            let ntype = types[i % types.len()].clone();
             let (a, b, c, d) = match ntype {
                 NeuronType::RegularSpiking => (0.02, 0.2, -65.0, 8.0),
                 NeuronType::FastSpiking => (0.1, 0.2, -65.0, 2.0),
@@ -501,9 +509,16 @@ impl NeuralDynamics {
                 concept_type: ConceptType::Visualization,
                 difficulty: DifficultyLevel::Advanced,
                 prerequisites: vec!["izhikevich_model".to_string(), "membrane_potential".to_string()],
-                learning_objectives: vec!["Observe spiking dynamics", "Understand neuron types".to_string()],
+                learning_objectives: vec![
+                    "Observe spiking dynamics".to_string(),
+                    "Understand neuron types".to_string(),
+                ],
                 cognitive_load: 0.7,
-                semantic_tags: vec!["computational_neuroscience", "spiking_networks", "izhikevich".to_string()],
+                semantic_tags: vec![
+                    "computational_neuroscience".to_string(),
+                    "spiking_networks".to_string(),
+                    "izhikevich".to_string(),
+                ],
             });
         }
 
@@ -527,9 +542,13 @@ impl NeuralDynamics {
     /// Run simulation step
     #[wasm_bindgen]
     pub fn step(&mut self, input_current: &JsValue) -> JsValue {
-        let currents: Vec<f32> = serde_wasm_bindgen::from_value(input_current).unwrap_or_else(|_| vec![0.0; self.neurons.len()]);
+        let currents: Vec<f32> = serde_wasm_bindgen::from_value(input_current.clone())
+            .unwrap_or_else(|_| vec![0.0; self.neurons.len()]);
         
-        // Izhikevich dynamics
+        // Izhikevich dynamics. Spikes are collected during the mutable pass and
+        // delivered afterwards, so `self.neurons` is only borrowed once at a
+        // time (a neuron cannot hold a `&mut` to its own target).
+        let mut fired: Vec<usize> = Vec::new();
         for (i, neuron) in self.neurons.iter_mut().enumerate() {
             let i_syn = currents.get(i).copied().unwrap_or(0.0);
             
@@ -543,25 +562,27 @@ impl NeuralDynamics {
                 neuron.firing_history.push(self.time);
                 neuron.v = neuron.c;
                 neuron.u += neuron.d;
-                
-                // Propagate to connected neurons
-                for conn in &self.connections {
-                    if conn.from == i {
-                        let target = &mut self.neurons[conn.to];
-                        let w = match conn.synapse_type {
-                            SynapseType::Excitatory => conn.weight,
-                            SynapseType::Inhibitory => -conn.weight,
-                            SynapseType::Modulatory => conn.weight * 0.5,
-                        };
-                        // Delayed synaptic input (simplified)
-                        target.v += w * 0.1;
-                    }
-                }
+                fired.push(i);
             }
             
             // Keep history bounded
             if neuron.firing_history.len() > 1000 {
                 neuron.firing_history.drain(0..500);
+            }
+        }
+        
+        // Propagate to connected neurons
+        for &i in &fired {
+            for conn in &self.connections {
+                if conn.from == i {
+                    let w = match conn.synapse_type {
+                        SynapseType::Excitatory => conn.weight,
+                        SynapseType::Inhibitory => -conn.weight,
+                        SynapseType::Modulatory => conn.weight * 0.5,
+                    };
+                    // Delayed synaptic input (simplified)
+                    self.neurons[conn.to].v += w * 0.1;
+                }
             }
         }
         
@@ -577,10 +598,7 @@ impl NeuralDynamics {
         
         let result = StepResult {
             potentials: self.neurons.iter().map(|n| n.v).collect(),
-            spikes: self.neurons.iter().enumerate()
-                .filter(|(_, n)| n.firing_history.last() == Some(&(self.time - self.dt)))
-                .map(|(i, _)| i)
-                .collect(),
+            spikes: fired,
             time: self.time,
         };
         serde_wasm_bindgen::to_value(&result).unwrap()
@@ -613,7 +631,7 @@ pub struct GraphAlgorithmVisualizer {
     labels: HashMap<NodeIndex, SemanticLabel>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 enum AlgorithmState {
     Idle,
     Dijkstra { source: NodeIndex, target: Option<NodeIndex>, distances: HashMap<NodeIndex, f32>, visited: FixedBitSet, pq: Vec<(f32, NodeIndex)> },
@@ -628,6 +646,12 @@ struct AlgorithmStep {
     highlighted_nodes: Vec<NodeIndex>,
     highlighted_edges: Vec<(NodeIndex, NodeIndex)>,
     data_snapshot: serde_json::Value,
+}
+
+/// `FixedBitSet` has no serde support, so algorithm snapshots record the
+/// set bits as an index list, which is what the visualizer highlights anyway.
+fn bitset_to_indices(bits: &FixedBitSet) -> Vec<usize> {
+    bits.ones().collect()
 }
 
 #[derive(Clone, Debug)]
@@ -744,8 +768,9 @@ impl GraphAlgorithmVisualizer {
             description: format!("Initialize: Set distance to source '{}' = 0, all others = ∞", 
                 self.graph.node_weight(source_idx).unwrap()),
             highlighted_nodes: vec![source_idx],
-            highlighted_edges: vec![],
-            data_snapshot: serde_json::json!({ "distances": distances.clone() }),
+            highlighted_edges: vec![],                data_snapshot: serde_json::json!({
+                    "distances": distances.iter().map(|(k, v)| (format!("{:?}", k), *v)).collect::<HashMap<_, _>>()
+                }),
         });
         
         while let Some((dist, current)) = pq.pop() {
@@ -757,7 +782,10 @@ impl GraphAlgorithmVisualizer {
                     self.graph.node_weight(current).unwrap(), dist),
                 highlighted_nodes: vec![current],
                 highlighted_edges: vec![],
-                data_snapshot: serde_json::json!({ "distances": distances.clone(), "visited": visited.clone() }),
+                data_snapshot: serde_json::json!({
+                    "distances": distances.iter().map(|(k, v)| (format!("{:?}", k), *v)).collect::<HashMap<_, _>>(),
+                    "visited": bitset_to_indices(&visited),
+                }),
             });
             
             if Some(current) == target_idx { break; }
@@ -779,7 +807,10 @@ impl GraphAlgorithmVisualizer {
                             new_dist),
                         highlighted_nodes: vec![current, neighbor],
                         highlighted_edges: vec![(current, neighbor)],
-                        data_snapshot: serde_json::json!({ "distances": distances.clone(), "visited": visited.clone() }),
+                        data_snapshot: serde_json::json!({
+                    "distances": distances.iter().map(|(k, v)| (format!("{:?}", k), *v)).collect::<HashMap<_, _>>(),
+                    "visited": bitset_to_indices(&visited),
+                }),
                     });
                 }
             }
@@ -913,7 +944,10 @@ impl CognitiveLoadSimulator {
             prerequisites: vec!["working_memory".to_string()],
             learning_objectives: vec!["Understand element interactivity".to_string()],
             cognitive_load: 0.3,
-            semantic_tags: vec!["cognitive_load_theory", "instructional_design".to_string()],
+            semantic_tags: vec![
+                "cognitive_load_theory".to_string(),
+                "instructional_design".to_string(),
+            ],
         });
         self.labels.insert("extraneous_load".to_string(), SemanticLabel {
             text: "Extraneous Cognitive Load".to_string(),
@@ -922,7 +956,10 @@ impl CognitiveLoadSimulator {
             prerequisites: vec![],
             learning_objectives: vec!["Identify poor instructional design".to_string()],
             cognitive_load: 0.3,
-            semantic_tags: vec!["cognitive_load_theory", "ux_design".to_string()],
+            semantic_tags: vec![
+                "cognitive_load_theory".to_string(),
+                "ux_design".to_string(),
+            ],
         });
         self.labels.insert("germane_load".to_string(), SemanticLabel {
             text: "Germane Cognitive Load".to_string(),
@@ -931,7 +968,10 @@ impl CognitiveLoadSimulator {
             prerequisites: vec!["schema_acquisition".to_string()],
             learning_objectives: vec!["Design for schema construction".to_string()],
             cognitive_load: 0.4,
-            semantic_tags: vec!["cognitive_load_theory", "learning_optimization".to_string()],
+            semantic_tags: vec![
+                "cognitive_load_theory".to_string(),
+                "learning_optimization".to_string(),
+            ],
         });
         self.labels.insert("schema".to_string(), SemanticLabel {
             text: "Schema".to_string(),
@@ -940,7 +980,10 @@ impl CognitiveLoadSimulator {
             prerequisites: vec![],
             learning_objectives: vec!["Understand chunking and automation".to_string()],
             cognitive_load: 0.2,
-            semantic_tags: vec!["cognitive_psychology", "expertise".to_string()],
+            semantic_tags: vec![
+                "cognitive_psychology".to_string(),
+                "expertise".to_string(),
+            ],
         });
     }
 
@@ -1050,7 +1093,13 @@ pub fn get_module_registry() -> JsValue {
             description: "Interactive semantic network with spreading activation — explore how concepts prime each other in memory".to_string(),
             cognitive_domain: "Semantic Memory / Cognitive Psychology".to_string(),
             difficulty: "Intermediate".to_string(),
-            key_concepts: vec!["Spreading Activation", "Semantic Priming", "Working Memory", "Schema Theory", "Cognitive Scaffolding".to_string()],
+            key_concepts: vec![
+                "Spreading Activation".to_string(),
+                "Semantic Priming".to_string(),
+                "Working Memory".to_string(),
+                "Schema Theory".to_string(),
+                "Cognitive Scaffolding".to_string(),
+            ],
             learning_objectives: vec![
                 "Understand how activation spreads through semantic networks".to_string(),
                 "Experience progressive disclosure of cognitive concepts".to_string(),
@@ -1062,7 +1111,13 @@ pub fn get_module_registry() -> JsValue {
             description: "Izhikevich spiking neuron simulator with 6 biologically-plausible neuron types".to_string(),
             cognitive_domain: "Computational Neuroscience".to_string(),
             difficulty: "Advanced".to_string(),
-            key_concepts: vec!["Action Potentials", "Neuron Types", "Synaptic Transmission", "Network Dynamics", "Excitatory/Inhibitory Balance".to_string()],
+            key_concepts: vec![
+                "Action Potentials".to_string(),
+                "Neuron Types".to_string(),
+                "Synaptic Transmission".to_string(),
+                "Network Dynamics".to_string(),
+                "Excitatory/Inhibitory Balance".to_string(),
+            ],
             learning_objectives: vec![
                 "Observe different spiking patterns across neuron types".to_string(),
                 "Understand excitation-inhibition balance in networks".to_string(),
@@ -1074,7 +1129,12 @@ pub fn get_module_registry() -> JsValue {
             description: "Step-by-step execution of graph algorithms (Dijkstra, Tarjan SCC, MST) on cognitive architecture graphs".to_string(),
             cognitive_domain: "Graph Theory / Cognitive Architecture".to_string(),
             difficulty: "Intermediate".to_string(),
-            key_concepts: vec!["Shortest Path", "Strongly Connected Components", "Minimum Spanning Tree", "Cognitive Process Flow".to_string()],
+            key_concepts: vec![
+                "Shortest Path".to_string(),
+                "Strongly Connected Components".to_string(),
+                "Minimum Spanning Tree".to_string(),
+                "Cognitive Process Flow".to_string(),
+            ],
             learning_objectives: vec![
                 "Trace algorithm execution step by step".to_string(),
                 "Understand how cognitive processes form graph structures".to_string(),
@@ -1086,7 +1146,13 @@ pub fn get_module_registry() -> JsValue {
             description: "Real-time cognitive load simulation based on Cognitive Load Theory (Sweller, 1988)".to_string(),
             cognitive_domain: "Educational Psychology / Instructional Design".to_string(),
             difficulty: "Intermediate".to_string(),
-            key_concepts: vec!["Intrinsic Load", "Extraneous Load", "Germane Load", "Schema Acquisition", "Automation".to_string()],
+            key_concepts: vec![
+                "Intrinsic Load".to_string(),
+                "Extraneous Load".to_string(),
+                "Germane Load".to_string(),
+                "Schema Acquisition".to_string(),
+                "Automation".to_string(),
+            ],
             learning_objectives: vec![
                 "Calculate cognitive load for learning tasks".to_string(),
                 "Design instruction that optimizes germane load".to_string(),

@@ -1,0 +1,54 @@
+name: Facilitator / educator report
+description: You ran this with learners. Tell us what happened.
+title: "[Session] "
+labels: ["education", "facilitator-report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most useful kind of report this project gets. No detail is too
+        small — confusion in a specific sentence is a bug in the material.
+  - type: input
+    id: context
+    attributes:
+      label: Setting
+      description: Where and with whom (school, club, troop, library, home)?
+      placeholder: After-school club, 9 learners aged 10-12
+    validations:
+      required: true
+  - type: dropdown
+    id: modules
+    attributes:
+      label: Which modules did you use?
+      multiple: true
+      options:
+        - Word Web (semantic network)
+        - Neuron Lab (neural dynamics)
+        - Thought Paths (graph algorithms)
+        - Brain Power Meter (cognitive load)
+    validations:
+      required: true
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked?
+      description: Especially — what produced a real explanation from a learner?
+    validations:
+      required: true
+  - type: textarea
+    id: broke
+    attributes:
+      label: What broke or confused?
+      description: Include the exact wording that caused confusion if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: access
+    attributes:
+      label: Access needs encountered
+      description: Reading level, motor, vision, attention, language. What did you have to work around?
+  - type: input
+    id: standards
+    attributes:
+      label: Standards you were trying to hit
+      description: If you needed this to map to a specific code and it did not, name it.

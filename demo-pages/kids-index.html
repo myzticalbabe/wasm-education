@@ -194,6 +194,20 @@
   .large-text html { font-size: 22px; }
   .large-text .hero h2 { font-size: 3rem; }
   .large-text .module-title { font-size: 1.75rem; }
+
+  /* Screen-reader-only text */
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* Standards chips */
+  .tag.std { background: #1e3a8a; color: #fff; font-size: 0.72rem; letter-spacing: 0.02em; }
+
+  /* Real Scientists view */
+  .scientists-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+  .science-card { background: #fff; border: 4px solid var(--border); border-radius: 24px; padding: 1.75rem; box-shadow: var(--shadow); }
+  .science-card h3 { color: #166534; font-size: 1.35rem; margin-bottom: 0.25rem; }
+  .science-card .role { color: #15803d; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.9rem; }
+  .science-card p { color: #374151; line-height: 1.7; margin-bottom: 0.9rem; }
+  .science-card .try { background: #f0fdf4; border-left: 5px solid var(--accent); border-radius: 10px; padding: 0.9rem 1rem; color: #166534; font-weight: 700; font-size: 0.95rem; }
 </style>
 </head>
 <body>
@@ -226,6 +240,7 @@
       <nav class="nav" role="navigation" aria-label="Main navigation">
         <button class="nav-btn active" data-view="home" aria-pressed="true">🏠 Home</button>
         <button class="nav-btn" data-view="modules" aria-pressed="false">🎮 Play</button>
+        <button class="nav-btn" data-view="scientists" aria-pressed="false">🔬 Real Scientists</button>
         <button class="nav-btn" data-view="progress" aria-pressed="false">📊 Progress</button>
         <button class="nav-btn" data-view="parents" aria-pressed="false">👨‍👩‍👧 Parents</button>
       </nav>
@@ -272,6 +287,7 @@
             <span class="tag">Ages 8+</span>
             <span class="tag">15 min</span>
             <span class="tag">🧩 Puzzle</span>
+            <span class="tag std" title="Next Generation Science Standard MS-LS1-8">NGSS MS-LS1-8</span>
           </div>
           <button class="play-btn">▶ Start Adventure</button>
         </article>
@@ -285,6 +301,7 @@
             <span class="tag">Ages 10+</span>
             <span class="tag">20 min</span>
             <span class="tag">🔬 Science</span>
+            <span class="tag std" title="Next Generation Science Standard MS-LS1-8">NGSS MS-LS1-8</span>
           </div>
           <button class="play-btn" style="background: var(--fun3);">▶ Enter Lab</button>
         </article>
@@ -298,6 +315,7 @@
             <span class="tag">Ages 9+</span>
             <span class="tag">15 min</span>
             <span class="tag">🗺️ Quest</span>
+            <span class="tag std" title="CSTA 1B-AP-08 and NGSS MS-ETS1-4">CSTA 1B-AP-08</span>
           </div>
           <button class="play-btn" style="background: var(--fun4);">▶ Begin Quest</button>
         </article>
@@ -311,6 +329,7 @@
             <span class="tag">Ages 9+</span>
             <span class="tag">10 min</span>
             <span class="tag">⚡ Strategy</span>
+            <span class="tag std" title="ISTE 1.5 Computational Thinker">ISTE 1.5</span>
           </div>
           <button class="play-btn" style="background: var(--fun5);">▶ Power Up</button>
         </article>
@@ -351,7 +370,8 @@
         <p class="view-desc">Tap concepts to activate them! Watch the activation spread like ripples in a pond. Level up to unlock more brain secrets!</p>
       </header>
       <div class="canvas-zone">
-        <canvas id="snCanvas" aria-label="Interactive semantic network - click nodes to activate"></canvas>
+        <canvas id="snCanvas" role="img" aria-label="Interactive semantic network - click nodes to activate">A web of connected words. Your browser cannot draw it here. Use the buttons below the picture: each one does the same thing the picture does.</canvas>
+        <p class="sr-only" id="snCanvasState">Semantic network ready. Use the buttons below to activate concepts.</p>
         <div class="canvas-toolbar">
           <button class="toolbar-btn" onclick="snActivateKids('working_memory')">🧠 Working Memory</button>
           <button class="toolbar-btn" onclick="snActivateKids('attention')">👁️ Attention</button>
@@ -415,7 +435,8 @@
         <p class="view-desc">Build living neurons! Watch them spike, connect, and dance. Each type has its own superpower.</p>
       </header>
       <div class="canvas-zone">
-        <canvas id="ndCanvas" aria-label="Neuron spike raster - watch neurons fire in real time"></canvas>
+        <canvas id="ndCanvas" role="img" aria-label="Neuron spike raster - watch neurons fire in real time">A chart of brain cells firing over time. Your browser cannot draw it here. Use the controls below to change the current and watch the pattern.</canvas>
+        <p class="sr-only" id="ndCanvasState">Neuron simulation ready. Use the controls below to start it.</p>
         <div class="canvas-toolbar">
           <button class="toolbar-btn fun" onclick="ndStartKids()">▶ Start Lab</button>
           <button class="toolbar-btn" onclick="ndStopKids()">⏸ Pause</button>
@@ -476,7 +497,8 @@
         <p class="view-desc">Help ideas travel through your brain! Find the fastest routes from Perception to Expertise using Dijkstra's algorithm magic.</p>
       </header>
       <div class="canvas-zone">
-        <canvas id="gaCanvas" aria-label="Cognitive graph - click to find paths between brain regions"></canvas>
+        <canvas id="gaCanvas" role="img" aria-label="Cognitive graph - click to find paths between brain regions">A map of brain regions joined by paths. Your browser cannot draw it here. Use the buttons below to find a route.</canvas>
+        <p class="sr-only" id="gaCanvasState">Graph ready. Use the buttons below to run a search.</p>
         <div class="canvas-toolbar">
           <button class="toolbar-btn fun" onclick="gaRunDijkstraKids()">🚀 Find Path</button>
           <button class="toolbar-btn" onclick="gaNextStepKids()">➡ Next Step</button>
@@ -549,7 +571,8 @@
         <p class="view-desc">Balance your mental energy! Learn why some homework feels impossible and how to make learning easier.</p>
       </header>
       <div class="canvas-zone">
-        <canvas id="clCanvas" aria-label="Brain power meter - three colored bars showing mental load"></canvas>
+        <canvas id="clCanvas" role="img" aria-label="Brain power meter - three colored bars showing mental load">Three bars showing how full your working memory is. Your browser cannot draw it here. Use the sliders below to change the load.</canvas>
+        <p class="sr-only" id="clCanvasState">Load meter ready. Use the sliders below to change the load.</p>
         <div class="canvas-toolbar">
           <button class="toolbar-btn fun" onclick="clSimulateKids()">🧪 Test My Brain</button>
           <button class="toolbar-btn" onclick="clResetKids()">🔄 Reset</button>
@@ -718,11 +741,11 @@
         <div class="control-card" style="grid-column: 1 / -1;">
           <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">🛡️ Safety & Privacy</h3>
           <ul style="color: #374151; line-height: 2; padding-left: 1.5rem;">
-            <li><strong>No personal data collected</strong> — All progress stored locally in browser</li>
-            <li><strong>No accounts required</strong> — Play instantly, no sign-up</li>
-            <li><strong>No ads, no tracking</strong> — Pure educational experience</li>
-            <li><strong>Offline capable</strong> — Works without internet after first load</li>
-            <li><strong>COPPA/GDPR compliant</strong> — Designed for children's privacy</li>
+            <li><strong>What is stored</strong> — one browser key named <code>brainExplorerProgress</code> holding XP and badge state. Nothing else.</li>
+            <li><strong>What is never stored</strong> — no name, no age, no email, no photo, no location, no IP logging by us</li>
+            <li><strong>Nothing leaves the device</strong> — the page makes no network requests at all after it loads</li>
+            <li><strong>To erase it</strong> — clears with normal browser data clearing, or the Reset button in Progress</li>
+            <li><strong>COPPA / GDPR-K</strong> — no personal information is collected from a child, so there is nothing to consent to</li>
           </ul>
         </div>
         <div class="control-card" style="grid-column: 1 / -1;">
@@ -758,6 +781,34 @@
           </div>
         </div>
         <div class="control-card" style="grid-column: 1 / -1;">
+          <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">📋 Standards Alignment</h3>
+          <p style="color: #374151; line-height: 1.7; margin-bottom: 1rem;">Each adventure is mapped to the codes a school or club is accountable for, so it can drop into an existing unit instead of running as an extra. Full mapping in <code>docs/STANDARDS-ALIGNMENT.md</code>.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; font-size: 0.9rem; color: #374151; line-height: 1.8;">
+            <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.25rem;">
+              <h4 style="color: #166534; margin-bottom: 0.5rem;">NGSS</h4>
+              <div><strong>MS-LS1-8</strong> — sensory input becomes memory</div>
+              <div><strong>MS-LS1-3</strong> — body as interacting subsystems</div>
+              <div><strong>4-LS1-2</strong> — receive, process, respond</div>
+              <div><strong>MS-ETS1-4</strong> — model for iterative testing</div>
+              <div>Practices: SEP 2, 4, 5 · Concepts: CCC 1, 2, 4, 5</div>
+            </div>
+            <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.25rem;">
+              <h4 style="color: #166534; margin-bottom: 0.5rem;">CSTA K–12 CS (2017)</h4>
+              <div><strong>1B-AP-08</strong> — compare and refine algorithms</div>
+              <div><strong>1B-AP-11 / 2-AP-13</strong> — decompose a problem</div>
+              <div><strong>1B-AP-15 / 2-AP-17</strong> — test and debug</div>
+              <div><strong>1B-DA-06 / 1B-DA-07</strong> — visualize data, propose causes</div>
+              <div><strong>1B-CS-02</strong> — hardware and software as a system</div>
+            </div>
+            <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.25rem;">
+              <h4 style="color: #166534; margin-bottom: 0.5rem;">ISTE Students (2016)</h4>
+              <div><strong>1.5a–d</strong> Computational Thinker</div>
+              <div><strong>1.4b</strong> Innovative Designer</div>
+              <div><strong>1.3d</strong> Knowledge Constructor</div>
+            </div>
+          </div>
+        </div>
+        <div class="control-card" style="grid-column: 1 / -1;">
           <h3 style="color: #166534; margin-bottom: 1rem; font-size: 1.25rem;">📖 Recommended Reading & Resources</h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
             <div style="background: #fff; border: 2px solid var(--border); border-radius: 16px; padding: 1.5rem;">
@@ -778,6 +829,63 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Real Scientists View -->
+    <section id="view-scientists" class="kids-view" aria-labelledby="scientistsTitle">
+      <header class="view-header">
+        <h2 class="view-title" id="scientistsTitle">🔬 Real Scientists</h2>
+        <p class="view-desc">The games you just played are the actual work of real people. Here are six of them, and what they figured out.</p>
+      </header>
+
+      <div class="scientists-grid">
+        <article class="science-card">
+          <h3>Danielle Bassett</h3>
+          <p class="role">Network neuroscientist</p>
+          <p>She treats the brain like the maps in <strong>Thought Paths</strong>: a set of regions joined by connections. Using graph maths, she showed that your brain's network actually re-wires itself while you learn something new.</p>
+          <p class="try">Try this: in Word Web, activate one concept and count how many others light up. That number is what she measures for a whole brain.</p>
+        </article>
+
+        <article class="science-card">
+          <h3>Eve Marder</h3>
+          <p class="role">Neuroscientist, circuits</p>
+          <p>Her lab asked a simple question that turned out to be enormous: does a group of neurons behave the way the single neurons would predict? The answer is no. The same cells wired differently produce completely different behaviour.</p>
+          <p class="try">Try this: in Neuron Lab, change how strongly the neurons are coupled without changing how many there are. The pattern changes anyway. That is her point.</p>
+        </article>
+
+        <article class="science-card">
+          <h3>Rita Levi-Montalcini</h3>
+          <p class="role">Neurobiologist, Nobel 1986</p>
+          <p>She discovered <strong>nerve growth factor</strong> — a chemical signal that tells growing neurons which way to reach. She did part of this work in a bedroom, in hiding, during the Second World War, with a microscope she built herself.</p>
+          <p class="try">Try this: in Neuron Lab, notice that neurons only connect if a signal reaches them. Growth factor is one of those signals.</p>
+        </article>
+
+        <article class="science-card">
+          <h3>Brenda Milner</h3>
+          <p class="role">Neuropsychologist</p>
+          <p>She studied a patient known as H.M., who could not form new memories, and proved that <em>memory is not one thing</em>. You have several separate memory systems that can break independently — which is why Word Web and the Brain Power Meter are two different games.</p>
+          <p class="try">Try this: in Word Web, ask why some words feel easier to reach than others. That feeling is one system talking to another.</p>
+        </article>
+
+        <article class="science-card">
+          <h3>Radia Perlman</h3>
+          <p class="role">Computer scientist, networks</p>
+          <p>She designed the <strong>spanning tree</strong> algorithm that stops a network from sending the same message round and round forever. Without it, connecting two networks would jam both of them.</p>
+          <p class="try">Try this: in Thought Paths, find a route that visits no junction twice. You have just built a spanning tree.</p>
+        </article>
+
+        <article class="science-card">
+          <h3>Frances Allen</h3>
+          <p class="role">Computer scientist, compilers · Turing Award 2006</p>
+          <p>She worked out how to translate programs into faster machine instructions. Every smooth, instant animation on these pages runs on ideas she pioneered — she made the invisible translation step fast.</p>
+          <p class="try">Try this: everything you click here reacts in under a second. That speed is compiler work, not magic.</p>
+        </article>
+      </div>
+
+      <div class="hero" style="margin-top: 2rem;">
+        <h3 style="color: #92400e; font-size: 1.5rem; margin-bottom: 0.75rem;">One more thing</h3>
+        <p style="color: #78350f; font-weight: 600; max-width: 60ch; margin: 0 auto;">None of these six was "naturally" good at this. Each one got stuck, checked something, and tried again — usually for years. Getting stuck is the job. Your brain builds connections by using them, which means the confusing part is the part where you are actually learning.</p>
       </div>
     </section>
   </main>
@@ -928,8 +1036,10 @@ function showView(viewName) {
     btn.setAttribute('aria-pressed', active);
   });
   
+  // 'modules' has no section of its own: the module grid lives on Home.
+  const targetView = viewName === 'modules' ? 'home' : viewName;
   document.querySelectorAll('.kids-view').forEach(view => {
-    view.classList.toggle('active', view.id === 'view-' + viewName);
+    view.classList.toggle('active', view.id === 'view-' + targetView);
   });
   
   // Stop animations
@@ -937,7 +1047,7 @@ function showView(viewName) {
   animationFrames = {};
   
   // View-specific init
-  if (viewName === 'home') {
+  if (viewName === 'home' || viewName === 'modules') {
     updateHeroStats();
   } else if (viewName === 'progress') {
     renderProgressView();
@@ -955,22 +1065,6 @@ function openModule(moduleId) {
   speak(`Starting ${document.querySelector(`[onclick*="${moduleId}"] .module-title`)?.textContent || moduleId}!`);
 }
 
-function showView(viewName) {
-  currentView = viewName;
-  document.querySelectorAll('.nav-btn').forEach(btn => {
-    const active = btn.dataset.view === viewName;
-    btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', active);
-  });
-  document.querySelectorAll('.kids-view').forEach(view => {
-    view.classList.toggle('active', view.id === 'view-' + viewName);
-  });
-  Object.values(animationFrames).forEach(cancelAnimationFrame);
-  animationFrames = {};
-  
-  if (viewName === 'home') updateHeroStats();
-  if (viewName === 'progress') renderProgressView();
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEMANTIC NETWORK (Kids Version)
