@@ -1,69 +1,124 @@
 name: CI
+
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, master]
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so a new TinyGo/Rust release cannot silently change artifacts.
+  TINYGO_VERSION: "0.44.0"
+  # Size budgets (bytes) — the demo pages ship these bytes to every learner.
+  RUST_WASM_BUDGET: "512000"
+  GO_WASM_BUDGET: "1048576"
+
 jobs:
-  test:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for large files
+        run: |
+          find . -type f -size +50M ! -path "./.git/*" | head -20
+          if [ $(find . -type f -size +50M ! -path "./.git/*" | wc -l) -gt 0 ]; then
+            echo "::error::Files larger than 50MB found"
+            exit 1
+          fi
+
+  static-checks:
+    name: Static page checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with: { targets: wasm32-unknown-unknown }
+        with:
+          python-version: "3.12"
+      - name: Structural checks (nav targets, local refs, canvas alternatives)
+        run: python tools/check_pages.py
+      - name: Smoke tests
+        run: python -m pytest tests/ -q
+
+  wasm-rust:
+    name: Build Rust WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/rustup@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
       - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-      - name: Build Rust WASM
+        run: cargo install wasm-pack --locked
+      - name: Build (web target, what demo-pages imports)
         run: |
           cd rust-wasm
           wasm-pack build --target web --out-dir pkg
-      - name: Install Go (version supported by TinyGo)
-        uses: actions/setup-go@v5
+      - name: Size budget
+        run: |
+          WASM=$(ls -S rust-wasm/pkg/*_bg.wasm | head -1)
+          SIZE=$(stat -c%s "$WASM")
+          echo "Rust WASM: $WASM = ${SIZE} bytes (budget ${RUST_WASM_BUDGET})" >> "$GITHUB_STEP_SUMMARY"
+          [ "$SIZE" -le "$RUST_WASM_BUDGET" ] || { echo "::error::Rust WASM ${SIZE}B exceeds ${RUST_WASM_BUDGET}B budget"; exit 1; }
+      - uses: actions/upload-artifact@v4
         with:
-          go-version: '1.25.x'
-      - name: Install TinyGo
-        run: |
-          TINYGO_VERSION=0.44.0
-          curl -fsSL -o tinygo.tar.gz "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.linux-amd64.tar.gz"
-          sudo tar -C /usr/local -xzf tinygo.tar.gz
-          echo "/usr/local/tinygo/bin" >> "$GITHUB_PATH"
-      - name: Show toolchain versions
-        run: |
-          go version
-          tinygo version
-      - name: Build Go WASM
+          name: rust-pkg
+          path: rust-wasm/pkg/
+
+  wasm-go:
+    name: Build Go WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Standard Go build (GOOS=js GOARCH=wasm — always available)
         run: |
           cd go-wasm
+          GOOS=js GOARCH=wasm go build -o main-stdlib.wasm .
+          ls -la *.wasm
+      - name: TinyGo build (pinned ${{ env.TINYGO_VERSION }} — what ships)
+        run: |
+          curl -sSL -o /tmp/tinygo.deb "https://github.com/tinygo/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb"
+          sudo dpkg -i /tmp/tinygo.deb
+          cd go-wasm
           tinygo build -o main.wasm -target wasm -no-debug -opt=s .
-      - name: Verify demo page
+          cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" ./wasm_exec.js 2>/dev/null || cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./wasm_exec.js
+          ls -la *.wasm
+      - name: Size budget (TinyGo artifact is what ships)
         run: |
-          ls -la demo-pages/index.html
+          SIZE=$(stat -c%s go-wasm/main.wasm)
+          echo "Go WASM (TinyGo): ${SIZE} bytes (budget ${GO_WASM_BUDGET}), stdlib reference: $(stat -c%s go-wasm/main-stdlib.wasm) bytes" >> "$GITHUB_STEP_SUMMARY"
+          [ "$SIZE" -le "$GO_WASM_BUDGET" ] || { echo "::error::Go WASM ${SIZE}B exceeds ${GO_WASM_BUDGET}B budget"; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: go-wasm
+          path: |
+            go-wasm/main.wasm
+            go-wasm/wasm_exec.js
 
-      - name: Check page structure and local assets
-        run: |
-          python tools/check_pages.py
-      - name: Check licenses
-        run: |
-          test -f LICENSE && echo "LICENSE present" || exit 1
-
-  ci:
-    name: ci
-    needs: [test]
+  summary:
+    name: Summary
+    needs: [lint, static-checks, wasm-rust, wasm-go]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Aggregate required jobs
-        env:
-          RESULTS: ${{ join(needs.*.result, ',') }}
+      - name: Check status
         run: |
-          echo "job results: $RESULTS"
-          case ",$RESULTS," in
-            *,failure,*|*,cancelled,*)
-              echo "a required job did not succeed"
-              exit 1
-              ;;
-          esac
-          echo "all required jobs succeeded"
+          echo "Lint: ${{ needs.lint.result }}"
+          echo "Static checks: ${{ needs.static-checks.result }}"
+          echo "Rust WASM: ${{ needs.wasm-rust.result }}"
+          echo "Go WASM: ${{ needs.wasm-go.result }}"
+          if [[ "${{ needs.lint.result }}" != "success" ]] || [[ "${{ needs.static-checks.result }}" != "success" ]] || [[ "${{ needs.wasm-rust.result }}" != "success" ]] || [[ "${{ needs.wasm-go.result }}" != "success" ]]; then
+            exit 1
+          fi

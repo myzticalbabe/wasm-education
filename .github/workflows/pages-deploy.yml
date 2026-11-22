@@ -1,34 +1,61 @@
 name: Deploy to GitHub Pages
+
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  build:
+    name: Build site (demo pages + compiled WASM)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/rustup@v1
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+      - name: Build Rust WASM for the browser
+        run: |
+          cd rust-wasm
+          wasm-pack build --target web --out-dir pkg
+      - name: Assemble _site (pages reference pkg/ relatively)
+        run: |
+          rm -rf _site && mkdir -p _site
+          cp -r demo-pages/. _site/
+          mkdir -p _site/pkg
+          cp -r rust-wasm/pkg/. _site/pkg/
+          # Go module ships prebuilt from the CI artifact path; when built
+          # locally via TinyGo, copy main.wasm + wasm_exec.js next to the page.
+          if [ -f go-wasm/main.wasm ]; then cp go-wasm/main.wasm go-wasm/wasm_exec.js _site/ 2>/dev/null || true; fi
+          # Pages serves .wasm with application/wasm; .nojekyll keeps
+          # underscore-prefixed files servable.
+          touch _site/.nojekyll
+          ls -la _site _site/pkg | head -30
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20' }
-      - name: Install dependencies
-        run: cd demo-pages && npm init -y && npm install --save-dev http-server
-      - name: Build
-        run: echo "Static site - no build needed"
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with: { path: demo-pages }
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4

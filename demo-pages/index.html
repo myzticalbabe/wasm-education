@@ -177,7 +177,7 @@
           <div class="controls-grid">
             <div class="control-group">
               <label class="control-label">Concept to Activate</label>
-              <select class="control-input" id="snConceptSelect">
+              <select class="control-input" id="snConceptSelect" aria-label="Concept to activate">
                 <option value="working_memory">Working Memory</option>
                 <option value="attention">Attention</option>
                 <option value="spreading_activation">Spreading Activation</option>
@@ -197,7 +197,7 @@
             <div class="control-group">
               <label class="control-label">Initial Activation <span id="snActivationValue">1.0</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="snActivationSlider" min="0" max="1" step="0.1" value="1">
+                <input type="range" class="slider" id="snActivationSlider" min="0" max="1" step="0.1" value="1" aria-label="Initial activation strength">
                 <span class="slider-value" id="snActivationValue">1.0</span>
               </div>
             </div>
@@ -241,13 +241,13 @@
             <div class="control-group">
               <label class="control-label">Time Step (ms) <span id="ndDtValue">0.1</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="ndDtSlider" min="0.01" max="1" step="0.01" value="0.1">
+                <input type="range" class="slider" id="ndDtSlider" min="0.01" max="1" step="0.01" value="0.1" aria-label="Simulation time step in milliseconds">
                 <span class="slider-value" id="ndDtValue">0.1</span>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Neurons to Display</label>
-              <select class="control-input" id="ndDisplaySelect">
+              <select class="control-input" id="ndDisplaySelect" aria-label="Neurons to display">
                 <option value="all">All 50 Neurons</option>
                 <option value="spiking">Only Spiking</option>
                 <option value="regular">Regular Spiking</option>
@@ -297,11 +297,11 @@
           <div class="controls-grid">
             <div class="control-group">
               <label class="control-label">Source Node</label>
-              <select class="control-input" id="gaSourceSelect"></select>
+              <select class="control-input" id="gaSourceSelect" aria-label="Source node for shortest path"></select>
             </div>
             <div class="control-group">
               <label class="control-label">Target Node (optional)</label>
-              <select class="control-input" id="gaTargetSelect">
+              <select class="control-input" id="gaTargetSelect" aria-label="Target node, optional, blank means full graph">
                 <option value="">None (full graph)</option>
               </select>
             </div>
@@ -338,35 +338,35 @@
             <div class="control-group">
               <label class="control-label">Element Count <span id="clElementCountValue">5</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="clElementCount" min="1" max="20" value="5">
+                <input type="range" class="slider" id="clElementCount" min="1" max="20" value="5" aria-label="Element count">
                 <span class="slider-value" id="clElementCountValue">5</span>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Element Interactivity <span id="clInteractivityValue">0.7</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="clInteractivity" min="0" max="1" step="0.1" value="0.7">
+                <input type="range" class="slider" id="clInteractivity" min="0" max="1" step="0.1" value="0.7" aria-label="Element interactivity">
                 <span class="slider-value" id="clInteractivityValue">0.7</span>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Instructional Quality <span id="clQualityValue">0.6</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="clQuality" min="0" max="1" step="0.1" value="0.6">
+                <input type="range" class="slider" id="clQuality" min="0" max="1" step="0.1" value="0.6" aria-label="Instructional quality">
                 <span class="slider-value" id="clQualityValue">0.6</span>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Learner Expertise <span id="clExpertiseValue">0.3</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="clExpertise" min="0" max="1" step="0.1" value="0.3">
+                <input type="range" class="slider" id="clExpertise" min="0" max="1" step="0.1" value="0.3" aria-label="Learner expertise">
                 <span class="slider-value" id="clExpertiseValue">0.3</span>
               </div>
             </div>
             <div class="control-group">
               <label class="control-label">Time Pressure <span id="clPressureValue">0.0</span></label>
               <div class="slider-container">
-                <input type="range" class="slider" id="clPressure" min="0" max="1" step="0.1" value="0">
+                <input type="range" class="slider" id="clPressure" min="0" max="1" step="0.1" value="0" aria-label="Time pressure">
                 <span class="slider-value" id="clPressureValue">0.0</span>
               </div>
             </div>
