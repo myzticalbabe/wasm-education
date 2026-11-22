@@ -20,3 +20,10 @@ package root:component;
 world root {
   export run: func(blob: string) -> string;
 }
+
+# BUILD_LOG v0.2 — 2026-11-22 (gap closure: acquire, chained seals, replay, reporter, CI, bypass-kit, annotate, demo)
+# wit-bindgen =0.63.0 pinned in all 6 crates; CARGO_TARGET_DIR=.target-shared; invoke = call-expression form.
+# g1: seal("case-001|acquire|2026-11-22") = 4526540249018236259 (stable)
+# chain: 2566118661192581389 -> 13517821046654747850 -> 16657771995194439954
+# report(case-001): claims=3 verified=3 report-hash=6535537349267962746; tampered: verified=2 claim[1]=FAIL
+# replay.sh 17/17; bypass-kit/run.sh 8/8; validate VALID-OK x8 (acquire custody parser timeline reporter aiassist composed-timeline composed-reporter)
