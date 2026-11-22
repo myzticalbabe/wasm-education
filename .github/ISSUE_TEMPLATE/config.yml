@@ -1,8 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Got a question?
-    url: https://github.com/myzticalbabe/wasm-education/discussions/categories/q-a
-    about: Ask a question there!
-  - name: Want to contribute?
+  - name: Head to the contribution guide
     url: https://github.com/myzticalbabe/wasm-education/wiki/contribute
-    about: Head to the contribution guide
+    about: Want to contribute? Start here.
