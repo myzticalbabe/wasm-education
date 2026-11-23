@@ -385,7 +385,7 @@
             <span class="control-label-text">Choose a concept to activate</span>
             <span class="control-value" id="snConceptDisplay">Working Memory</span>
           </div>
-          <select class="big-slider" id="snConceptSelect" onchange="document.getElementById('snConceptDisplay').textContent = this.options[this.selectedIndex].text">
+          <select class="big-slider" id="snConceptSelect" aria-label="Pick a brain word to light up" onchange="document.getElementById('snConceptDisplay').textContent = this.options[this.selectedIndex].text">
             <option value="working_memory">🧠 Working Memory</option>
             <option value="attention">👁️ Attention</option>
             <option value="spreading_activation">✨ Spreading Activation</option>
@@ -407,7 +407,7 @@
             <span class="control-label-text">Activation Power</span>
             <span class="control-value" id="snPowerValue">100%</span>
           </div>
-          <input type="range" class="big-slider" id="snPowerSlider" min="0" max="100" value="100" oninput="document.getElementById('snPowerValue').textContent = this.value + '%'">
+          <input type="range" class="big-slider" id="snPowerSlider" aria-label="Brain power" min="0" max="100" value="100" oninput="document.getElementById('snPowerValue').textContent = this.value + '%'">
         </div>
       </div>
       <div style="text-align: center; margin: 1rem 0;">
@@ -450,14 +450,14 @@
             <span class="control-label-text">Simulation Speed</span>
             <span class="control-value" id="ndSpeedValue">1x</span>
           </div>
-          <input type="range" class="big-slider" id="ndSpeedSlider" min="1" max="10" value="1" oninput="document.getElementById('ndSpeedValue').textContent = this.value + 'x'; if(ndInstance) ndInstance.setSpeed(parseInt(this.value))">
+          <input type="range" class="big-slider" id="ndSpeedSlider" aria-label="Simulation speed" min="1" max="10" value="1" oninput="document.getElementById('ndSpeedValue').textContent = this.value + 'x'; if(ndInstance) ndInstance.setSpeed(parseInt(this.value))">
         </div>
         <div class="control-card">
           <div class="control-label">
             <span class="control-label-text">Focus Neuron Type</span>
             <span class="control-value" id="ndTypeDisplay">All Types</span>
           </div>
-          <select class="big-slider" id="ndTypeSelect" onchange="document.getElementById('ndTypeDisplay').textContent = this.options[this.selectedIndex].text; if(ndInstance) ndInstance.setFilter(this.value)">
+          <select class="big-slider" id="ndTypeSelect" aria-label="Neuron type to show" onchange="document.getElementById('ndTypeDisplay').textContent = this.options[this.selectedIndex].text; if(ndInstance) ndInstance.setFilter(this.value)">
             <option value="all">🌈 All Types</option>
             <option value="RegularSpiking">🔴 Regular Spiking (Pyramidal)</option>
             <option value="FastSpiking">🟠 Fast Spiking (Interneuron)</option>
@@ -512,7 +512,7 @@
             <span class="control-label-text">Starting Region</span>
             <span class="control-value" id="gaSourceDisplay">Perception</span>
           </div>
-          <select class="big-slider" id="gaSourceSelect" onchange="document.getElementById('gaSourceDisplay').textContent = this.value">
+          <select class="big-slider" id="gaSourceSelect" aria-label="Start place" onchange="document.getElementById('gaSourceDisplay').textContent = this.value">
             <option value="Perception">👁️ Perception</option>
             <option value="Attention">👁️ Attention</option>
             <option value="Working Memory">🧠 Working Memory</option>
@@ -532,7 +532,7 @@
             <span class="control-label-text">Destination (optional)</span>
             <span class="control-value" id="gaTargetDisplay">Auto</span>
           </div>
-          <select class="big-slider" id="gaTargetSelect" onchange="document.getElementById('gaTargetDisplay').textContent = this.value === '' ? 'Auto (find all)' : this.value">
+          <select class="big-slider" id="gaTargetSelect" aria-label="End place" onchange="document.getElementById('gaTargetDisplay').textContent = this.value === '' ? 'Auto (find all)' : this.value">
             <option value="">🌟 Find All Paths</option>
             <option value="Perception">👁️ Perception</option>
             <option value="Attention">👁️ Attention</option>
@@ -584,31 +584,31 @@
           <div class="control-label">
             <span class="control-label-text">🧩 Task Pieces <span id="clPiecesValue">5</span></span>
           </div>
-          <input type="range" class="big-slider" id="clPieces" min="1" max="20" value="5" oninput="document.getElementById('clPiecesValue').textContent = this.value">
+          <input type="range" class="big-slider" id="clPieces" aria-label="Number of pieces" min="1" max="20" value="5" oninput="document.getElementById('clPiecesValue').textContent = this.value">
         </div>
         <div class="control-card">
           <div class="control-label">
             <span class="control-label-text">🔗 How Connected? <span id="clConnectValue">70%</span></span>
           </div>
-          <input type="range" class="big-slider" id="clConnect" min="0" max="100" value="70" oninput="document.getElementById('clConnectValue').textContent = this.value + '%'">
+          <input type="range" class="big-slider" id="clConnect" aria-label="How connected the pieces are" min="0" max="100" value="70" oninput="document.getElementById('clConnectValue').textContent = this.value + '%'">
         </div>
         <div class="control-card">
           <div class="control-label">
             <span class="control-label-text">📚 How Well Explained? <span id="clExplainValue">60%</span></span>
           </div>
-          <input type="range" class="big-slider" id="clExplain" min="0" max="100" value="60" oninput="document.getElementById('clExplainValue').textContent = this.value + '%'">
+          <input type="range" class="big-slider" id="clExplain" aria-label="How clear the explanation is" min="0" max="100" value="60" oninput="document.getElementById('clExplainValue').textContent = this.value + '%'">
         </div>
         <div class="control-card">
           <div class="control-label">
             <span class="control-label-text">🎓 Your Skill Level <span id="clSkillValue">30%</span></span>
           </div>
-          <input type="range" class="big-slider" id="clSkill" min="0" max="100" value="30" oninput="document.getElementById('clSkillValue').textContent = this.value + '%'">
+          <input type="range" class="big-slider" id="clSkill" aria-label="Your skill level" min="0" max="100" value="30" oninput="document.getElementById('clSkillValue').textContent = this.value + '%'">
         </div>
         <div class="control-card">
           <div class="control-label">
             <span class="control-label-text">⏰ Time Pressure <span id="clRushValue">0%</span></span>
           </div>
-          <input type="range" class="big-slider" id="clRush" min="0" max="100" value="0" oninput="document.getElementById('clRushValue').textContent = this.value + '%'; if(clsInstance) clsInstance.setRush(this.value/100)">
+          <input type="range" class="big-slider" id="clRush" aria-label="How rushed you feel" min="0" max="100" value="0" oninput="document.getElementById('clRushValue').textContent = this.value + '%'; if(clsInstance) clsInstance.setRush(this.value/100)">
         </div>
       </div>
       <div style="text-align: center; margin: 1rem 0;">

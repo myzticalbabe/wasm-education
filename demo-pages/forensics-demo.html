@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forensics Hyper-Edge Pipeline — Runnable Demo</title>
+<meta name="description" content="Walk the evidence pipeline: acquire, seal, parse, timeline, annotate, report. Every output below was recorded from live component runs.">
+<style>
+  :root { --bg: #0f172a; --card: #1e293b; --border: #334155; --fg: #e2e8f0;
+          --muted: #94a3b8; --accent: #38bdf8; --ok: #4ade80; --fail: #f87171; }
+  * { box-sizing: border-box; }
+  body { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+         background: var(--bg); color: var(--fg); margin: 0; line-height: 1.6; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  header h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+  header p { color: var(--muted); margin: 0 0 1.5rem; }
+  nav a { color: var(--accent); }
+  .pipe { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1rem 0 2rem; }
+  .pipe span { background: var(--card); border: 1px solid var(--border);
+               border-radius: 8px; padding: .35rem .7rem; font-size: .85rem; }
+  .pipe span.arrow { background: none; border: none; color: var(--muted); padding: .35rem 0; }
+  section.card { background: var(--card); border: 1px solid var(--border);
+                 border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; }
+  section.card h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
+  section.card h2 .n { color: var(--accent); }
+  pre { background: #020617; border: 1px solid var(--border); border-radius: 8px;
+        padding: .9rem; overflow-x: auto; font-size: .82rem; }
+  .out { color: var(--ok); }
+  footer { color: var(--muted); font-size: .85rem; margin-top: 2rem; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><a href="./index.html">← WASM Education</a></nav>
+  <header>
+    <h1>Forensics Hyper-Edge Pipeline</h1>
+    <p>case-001 end to end: every output below was recorded from live
+    <code>wasmtime</code> runs against the components in
+    <code>forensics-hyperedge/</code>. Reproduce with <code>bash replay.sh</code> (17 checks).</p>
+  </header>
+
+  <div class="pipe" aria-label="Pipeline stages">
+    <span>acquire</span><span class="arrow">→</span><span>seal (chained)</span><span class="arrow">→</span>
+    <span>parse</span><span class="arrow">→</span><span>timeline</span><span class="arrow">→</span>
+    <span>annotate</span><span class="arrow">→</span><span>report</span>
+  </div>
+
+  <section class="card">
+    <h2><span class="n">1.</span> Acquire — chunked hash ingest</h2>
+    <pre><code>$ wasmtime run --invoke 'ingest("MSG from +1555 at cell-42")' acquire.component.wasm
+<span class="out">"chunks=1 root=15411808922966539639 c0=631032329683602341"</span></code></pre>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">2.</span> Seal — hash-chained custody (genesis prev=0)</h2>
+    <pre><code>$ wasmtime run --invoke 'seal-chained(0, "case-001|acquire|2026-11-22")' custody.component.wasm
+<span class="out">2566118661192581389</span>
+$ wasmtime run --invoke 'seal-chained(2566118661192581389, "case-001|parse|MSG from +1555 at cell-42")' custody.component.wasm
+<span class="out">13517821046654747850</span>
+$ wasmtime run --invoke 'seal-chained(13517821046654747850, "case-001|triage|cell-42 lead")' custody.component.wasm
+<span class="out">16657771995194439954</span></code></pre>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3.</span> Parse + compose timeline</h2>
+    <pre><code>$ wasmtime run --invoke 'run("MSG from +1555 at cell-42")' composed-timeline.component.wasm
+<span class="out">"parsed len=25 head=MSG from +1555 at cell-4|timeline"</span></code></pre>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4.</span> Annotate — model identity pinned by hash</h2>
+    <pre><code>$ wasmtime run --invoke 'annotate("fnv-demo", "temp=0", "summarize cell-42")' aiassist.component.wasm
+<span class="out">"model-hash=16113363829767271346|model-id=fnv-demo|prompt=summarize cell-42|logged=true"</span></code></pre>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5.</span> Report — court-ready, per-claim verdicts</h2>
+    <pre><code><span class="out">"case=case-001
+claims=3 verified=3
+claim[0]=OK line=prev=0 event=case-001|acquire|2026-11-22 seal=2566118661192581389
+claim[1]=OK line=prev=2566118661192581389 event=case-001|parse|MSG from +1555 at cell-42 seal=13517821046654747850
+claim[2]=OK line=prev=13517821046654747850 event=case-001|triage|cell-42 lead seal=16657771995194439954
+timeline=parsed len=25 head=MSG from +1555 at cell-4|timeline
+notes=model-hash=16113363829767271346|model-id=fnv-demo|prompt=summarize cell-42|logged=true
+report-hash=6535537349267962746
+"</span></code></pre>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">6.</span> Tamper fails closed</h2>
+    <pre><code>$ # flip one seal bit in the ledger, re-run report:
+<span class="out">claims=3 verified=2
+claim[1]=FAIL ...   ← named, never dropped</span></code></pre>
+  </section>
+
+  <footer>
+    Sources: <code>forensics-hyperedge/</code> (WIT contract + 6 Rust guests).
+    Verified by <code>replay.sh</code> (17 checks), <code>bypass-kit/</code> (8 checks),
+    and CI job <code>forensics-components</code> on every push.
+    License: SOUL FORGE v1.0 — see <a href="https://github.com/myzticalbabe/wasm-education">wasm-education</a>.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+// 13-forensics-hyperedge — WIT contract for LE/oversight pipeline v0.2.0.
+// Europol gaps addressed: standard interchange (1), custody-by-construction (2),
+// volume triage (6), no-black-box AI (8).
+// v0.2 adds: acquire ingest (front door), hash-chained seals (tamper-evident
+// log), reporter (court-ready artifact), annotate (model-hash pinned AI notes).
+package forensics:pipe@0.1.0;
+
+interface custody-ops {
+    seal: func(event: string) -> u64;
+    verify: func(expected: u64, event: string) -> bool;
+    // Each chained seal commits to the previous seal: seal-chained(prev, event)
+    // = FNV-1a over "<prev>:<event>". Genesis entries use prev = 0.
+    seal-chained: func(prev: u64, event: string) -> u64;
+    verify-chained: func(expected: u64, prev: u64, event: string) -> bool;
+}
+
+interface parse-ops {
+    parse: func(blob: string) -> string;
+}
+
+interface acquire-ops {
+    // Chunked ingest: splits blob into 64-byte chunks, hashes each, folds a
+    // root seal. Returns "chunks=N root=R c0=H0 c1=H1 ...". Empty blob yields
+    // chunks=0 with the FNV-1a offset basis as root.
+    ingest: func(blob: string) -> string;
+}
+
+interface report-ops {
+    // Ledger lines are "prev=<u64> event=<event> seal=<u64>", one per line.
+    // Each line is re-verified against custody-ops; the report carries a
+    // per-claim verdict plus a report-hash over all inputs and verdicts.
+    report: func(case-id: string, ledger: string, timeline: string, notes: string) -> string;
+}
+
+world custody {
+    export custody-ops;
+}
+
+world parser {
+    export parse-ops;
+}
+
+world acquire {
+    export acquire-ops;
+}
+
+world timeline {
+    import parse-ops;
+    export run: func(blob: string) -> string;
+}
+
+world reporter {
+    import custody-ops;
+    export report-ops;
+}
+
+world aiassist {
+    export assist: func(prompt: string) -> string;
+    // Pinned annotation: model-hash = FNV-1a over "<model-id>|<params>".
+    // A changed model or params invalidates old annotations by construction.
+    export annotate: func(model-id: string, params: string, prompt: string) -> string;
+}
