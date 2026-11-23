@@ -43,6 +43,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Install test runner (tests/test_smoke.py imports pytest; setup-python ships none)
+        run: pip install pytest
       - name: Structural checks (nav targets, local refs, canvas alternatives)
         run: python tools/check_pages.py
       - name: Smoke tests
@@ -53,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rust-lang/rustup@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           target: wasm32-unknown-unknown
@@ -89,7 +91,7 @@ jobs:
           ls -la *.wasm
       - name: TinyGo build (pinned ${{ env.TINYGO_VERSION }} — what ships)
         run: |
-          curl -sSL -o /tmp/tinygo.deb "https://github.com/tinygo/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb"
+          curl -sSL -o /tmp/tinygo.deb "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo_${TINYGO_VERSION}_amd64.deb"
           sudo dpkg -i /tmp/tinygo.deb
           cd go-wasm
           tinygo build -o main.wasm -target wasm -no-debug -opt=s .
@@ -118,7 +120,7 @@ jobs:
       COMPONENT_BUDGET: "131072"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rust-lang/rustup@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
           target: wasm32-unknown-unknown
